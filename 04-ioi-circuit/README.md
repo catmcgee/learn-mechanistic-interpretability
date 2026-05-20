@@ -26,7 +26,7 @@ By the end you'll have:
 5. [The experiment in plain English](#5-the-experiment-in-plain-english)
 6. [Section-by-section walkthrough of the notebook](#6-section-by-section-walkthrough-of-the-notebook)
 7. [What you should see when you run it](#7-what-you-should-see-when-you-run-it)
-8. [How to run it (Google Colab, ~10 minutes)](#8-how-to-run-it-google-colab-10-minutes)
+8. [How to run it](#8-how-to-run-it)
 9. [Where to go next](#9-where-to-go-next)
 
 ---
@@ -150,7 +150,7 @@ Run the model on the clean prompts and check that the top predicted next-token i
 Define a hook function that replaces a head's `z` output (at the final position) with the cached clean value. Define a function `patch_head(layer, head)` that runs the corrupted prompts through the model with this hook attached and returns the resulting logit diff.
 
 ### Section 6: Run the patching sweep
-Loop over all 144 heads. Computes recovery for each. Takes ~2-5 minutes on Colab T4.
+Loop over all 144 heads. Computes recovery for each. Takes.
 
 ### Section 7: The heatmap
 A 12×12 grid showing recovery percentage per head. The name movers should stand out clearly.
@@ -175,12 +175,11 @@ Exact head indices may shift slightly depending on the TransformerLens version's
 
 ---
 
-## 8. How to run it (Google Colab, ~10 minutes)
-
+## 8. How to run it
 1. Go to [colab.research.google.com](https://colab.research.google.com).
 2. `File → Upload notebook` → upload `ioi_circuit.ipynb`.
 3. `Runtime → Change runtime type → GPU`. T4 is fine.
-4. `Runtime → Run all`. First run takes ~8-10 minutes (most is downloading GPT-2 and the patching sweep). Subsequent runs are faster (the model is cached).
+4. `Runtime → Run all`. First run takes(most is downloading GPT-2 and the patching sweep). Subsequent runs are faster (the model is cached).
 
 If your Colab session keeps dying or out-of-memorying, swap GPT-2 small for a smaller model (e.g. `gpt2`, `attn-only-1l`, or `pythia-70m`) — `HookedTransformer.from_pretrained` supports many.
 

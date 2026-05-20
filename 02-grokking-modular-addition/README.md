@@ -21,7 +21,7 @@ This is the spiritual successor to project 1 (Toy Models of Superposition). Same
 5. [Just enough transformer to follow along](#5-just-enough-transformer-to-follow-along)
 6. [Section-by-section walkthrough of the notebook](#6-section-by-section-walkthrough-of-the-notebook)
 7. [What you should see when you run it](#7-what-you-should-see-when-you-run-it)
-8. [How to run it (Google Colab, ~10 minutes)](#8-how-to-run-it-google-colab-10-minutes)
+8. [How to run it](#8-how-to-run-it)
 9. [Where to go next](#9-where-to-go-next)
 
 ---
@@ -241,7 +241,7 @@ A hand-rolled tiny transformer in ~50 lines of PyTorch. We define:
 Hand-rolled is the mech-interp tradition — using `nn.Transformer` would hide the internals we want to inspect.
 
 ### Section 5: Training
-Standard loop, AdamW, cross-entropy on the `=`-position logits. Every 100 steps we record both train loss and test loss, so we can plot them at the end. ~25k steps takes ~5–10 min on a Colab T4.
+Standard loop, AdamW, cross-entropy on the `=`-position logits. Every 100 steps we record both train loss and test loss, so we can plot them at the end. ~25k steps takeson a Colab T4.
 
 ### Section 6: The grokking curve
 The headline plot. Train loss vs test loss vs step, log scale. This is the wow moment. You'll see the train loss crash to zero almost immediately, then a long flat plateau on test loss, then a sudden cliff. We mark the rough memorisation phase, plateau, and grokking phase on the plot.
@@ -268,12 +268,11 @@ Concrete expectations:
 
 ---
 
-## 8. How to run it (Google Colab, ~10 minutes)
-
+## 8. How to run it
 1. Go to [colab.research.google.com](https://colab.research.google.com).
 2. `File → Upload notebook` → upload `grokking.ipynb`.
 3. `Runtime → Change runtime type → GPU` (T4 is fine and free).
-4. `Runtime → Run all`. The model trains for ~5–10 minutes; the rest takes seconds.
+4. `Runtime → Run all`. The model trains for; the rest takes seconds.
 
 If you want to skip training and just play with the analysis, you could save the trained weights at the end of Section 5 and reload them — we don't bother with that here but it's a one-liner.
 

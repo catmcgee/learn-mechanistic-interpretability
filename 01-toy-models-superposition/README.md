@@ -19,7 +19,7 @@ By the end you'll have:
 5. [Just enough PyTorch to follow along](#5-just-enough-pytorch-to-follow-along)
 6. [Section-by-section walkthrough of the notebook](#6-section-by-section-walkthrough-of-the-notebook)
 7. [What you should see when you run it](#7-what-you-should-see-when-you-run-it)
-8. [How to run it (Google Colab, 5 minutes)](#8-how-to-run-it-google-colab-5-minutes)
+8. [How to run it](#8-how-to-run-it)
 9. [Where to go next](#9-where-to-go-next)
 
 ---
@@ -349,12 +349,11 @@ The exact geometry depends on random seeds. If you re-run with `torch.manual_see
 
 ---
 
-## 8. How to run it (Google Colab, 5 minutes)
-
+## 8. How to run it
 1. Go to [colab.research.google.com](https://colab.research.google.com).
 2. `File → Upload notebook` → upload `toy_models_superposition.ipynb`.
 3. `Runtime → Change runtime type → GPU` (T4 is fine and free).
-4. `Runtime → Run all`. Total runtime: ~1–2 minutes for the main experiment, another ~1–2 minutes if you run the stretch section.
+4. `Runtime → Run all`. Total runtime:for the main experiment, anotherif you run the stretch section.
 
 No installation needed — Colab comes with PyTorch and matplotlib pre-installed.
 

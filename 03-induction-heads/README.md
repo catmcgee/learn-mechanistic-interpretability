@@ -23,7 +23,7 @@ By the end you'll have:
 5. [The circuit explained](#5-the-circuit-explained)
 6. [Section-by-section walkthrough of the notebook](#6-section-by-section-walkthrough-of-the-notebook)
 7. [What you should see when you run it](#7-what-you-should-see-when-you-run-it)
-8. [How to run it (Google Colab, ~5 minutes)](#8-how-to-run-it-google-colab-5-minutes)
+8. [How to run it](#8-how-to-run-it)
 9. [Where to go next](#9-where-to-go-next)
 
 ---
@@ -189,7 +189,7 @@ What this all means, what we deliberately did not do (no causal verification —
 
 ## 7. What you should see when you run it
 
-1. Training: ~3,000 steps in ~3-5 minutes on Colab T4. The first-half loss stays near 4.16 the whole time; the second-half loss starts near 4.16 and drops to under 0.1.
+1. Training: ~3,000 steps in. The first-half loss stays near 4.16 the whole time; the second-half loss starts near 4.16 and drops to under 0.1.
 
 2. Head identification (Section 7): exactly one Layer 0 head has a previous-token score above ~0.5 (the rest are near `1/50`). Exactly one Layer 1 head has an induction score above ~0.5. The exact head indices depend on the random seed.
 
@@ -199,12 +199,11 @@ If only one of the two heads appears clearly, try retraining with a different se
 
 ---
 
-## 8. How to run it (Google Colab, ~5 minutes)
-
+## 8. How to run it
 1. Go to [colab.research.google.com](https://colab.research.google.com).
 2. `File → Upload notebook` → upload `induction_heads.ipynb`.
 3. `Runtime → Change runtime type → GPU`. T4 is fine.
-4. `Runtime → Run all`. Total runtime: ~5 minutes.
+4. `Runtime → Run all`. Total runtime:.
 
 If running locally, you need `torch`, `numpy`, `matplotlib`. CPU works but will be slow.
 

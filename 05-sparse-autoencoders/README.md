@@ -24,7 +24,7 @@ By the end you'll have:
 4. [The experiment in plain English](#4-the-experiment-in-plain-english)
 5. [Section-by-section walkthrough of the notebook](#5-section-by-section-walkthrough-of-the-notebook)
 6. [What you should see when you run it](#6-what-you-should-see-when-you-run-it)
-7. [How to run it (Google Colab, ~5 minutes)](#7-how-to-run-it-google-colab-5-minutes)
+7. [How to run it](#7-how-to-run-it)
 8. [Where this leaves you](#8-where-this-leaves-you)
 
 ---
@@ -177,8 +177,7 @@ If anything fails to converge, try increasing `n_sae_steps` to 10000 or adjustin
 
 ---
 
-## 7. How to run it (Google Colab, ~5 minutes)
-
+## 7. How to run it
 1. Go to [colab.research.google.com](https://colab.research.google.com).
 2. Upload `sparse_autoencoders.ipynb`.
 3. GPU is fine but unnecessary — this whole notebook runs on CPU in a few minutes.

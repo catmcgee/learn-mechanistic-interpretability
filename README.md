@@ -96,8 +96,6 @@ Every step folder contains:
 
 The READMEs share a common shape: what the project is about, glossary of terms, the experiment in plain English, just enough background to follow the code, a section-by-section walkthrough of the notebook, what you should see when you run it, how to run it, and where to go next.
 
-Each project is ~2–10 minutes to run on Colab's free GPU (longer for grokking and sparse autoencoders).
-
 ---
 
 ## What you'll be able to do at the end

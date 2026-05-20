@@ -28,7 +28,7 @@ By the end you'll have:
 4. [Just enough PyTorch to follow along](#4-just-enough-pytorch-to-follow-along)
 5. [Section-by-section walkthrough of the notebook](#5-section-by-section-walkthrough-of-the-notebook)
 6. [What you should see when you run it](#6-what-you-should-see-when-you-run-it)
-7. [How to run it (Google Colab, ~2 minutes)](#7-how-to-run-it-google-colab-2-minutes)
+7. [How to run it](#7-how-to-run-it)
 8. [Where to go next](#8-where-to-go-next)
 
 ---
@@ -193,12 +193,11 @@ Concrete expectations so you can tell whether things worked:
 
 ---
 
-## 7. How to run it (Google Colab, ~2 minutes)
-
+## 7. How to run it
 1. Go to [colab.research.google.com](https://colab.research.google.com).
 2. `File → Upload notebook` → upload `mnist_templates.ipynb`.
 3. No GPU needed — this runs on CPU in seconds. (GPU is fine too, just unnecessary.)
-4. `Runtime → Run all`. Total runtime under 2 minutes.
+4. `Runtime → Run all`. Total runtime under.
 
 If running locally: you need `torch`, `torchvision`, `matplotlib`. Conda or pip both fine.
 

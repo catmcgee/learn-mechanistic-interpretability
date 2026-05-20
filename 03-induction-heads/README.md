@@ -72,13 +72,7 @@ When the model has to predict the blank, it would be helpful to notice that "the
 2. Find what came right after that earlier `the` (which was `mat`).
 3. Predict `mat`.
 
-> **Suggested diagram — the induction head in action**
->
-> Why generate this: the "look back, then shift forward by one" rule is much faster to see than to read. A worked example on a real sentence makes it stick.
->
-> Prompt for ChatGPT image generation:
->
-> > A horizontal sequence of tokens (boxes) reading: `the | cat | sat | on | the | mat | ... | the | cat | sat | on | the | ?`. Highlight the current position `the | ?` at the far right in blue. Draw a curved arrow from the current `the` (second occurrence) back to the earlier `the` (first occurrence). Draw a short straight arrow from that earlier `the` forward by exactly one position to `mat`. Then draw another arrow from `mat` up to a thought bubble above the current position saying "predict: mat". Caption: "Induction = match-and-shift. Find the earlier copy of my current token, then copy what came after it." Clean technical diagram, sans-serif, no extra decoration.
+![Induction-head walkthrough on the sentence "the cat sat on the mat … the cat sat on the ?". Three labelled steps: (1) match — curved arrow from the current "the" back to the earlier "the"; (2) shift — short arrow forward by one token to "mat"; (3) copy — arrow up to a thought bubble "predict: mat" above the current position. Caption: Induction = match-and-shift.](diagrams/match-and-shift.png)
 
 Mechanically, the induction head's attention pattern at the current position is concentrated on the position immediately after the earlier matching token. It copies the value at that position to the residual stream, which the unembedding then reads out as a prediction.
 
@@ -143,13 +137,7 @@ This is K-composition: the induction head builds its keys using the output of th
 
 When you visualise the Layer 1 head's attention pattern in Section 7 of the notebook, you'll see a clean diagonal shifted by 25 positions — that's this whole machine working.
 
-> **Suggested diagram — the two-head circuit (K-composition)**
->
-> Why generate this: the composition story is the new idea this step teaches. A diagram showing the two layers and the dotted "K-composition" line between them is worth more than the paragraph above.
->
-> Prompt for ChatGPT image generation:
->
-> > A vertical two-layer transformer diagram. Bottom: a horizontal row of position-boxes (positions 0 through 5 for example) labelled "residual stream after embedding". A box labelled "Layer 0: previous-token head" sits above it; small arrows from each position attend to the position immediately to the left (sub-diagonal pattern). The output of Layer 0 is shown as another horizontal row of position-boxes labelled "residual stream after Layer 0 (now carries 'previous token' info at each position)". Above that, a box labelled "Layer 1: induction head". Show the induction head's query at the rightmost position drawing a curved arrow back to an earlier position. Below that arrow, a dotted vertical arrow labelled "K-composition: Layer 1's keys read what Layer 0 wrote". At the top, an unembedding box producing a prediction. Caption: "The induction circuit: previous-token head feeds the induction head via the residual stream." Clean technical diagram, white background, sans-serif labels.
+![Two-layer induction circuit. Bottom: residual stream after embedding, with each position attending to the immediately previous position via "Layer 0: previous-token head". Middle: residual stream after Layer 0 now carries previous-token info at each position. Top: "Layer 1: induction head" — query from the current position attends back to an earlier position; a dotted vertical arrow labels "K-composition: Layer 1's keys read what Layer 0 wrote". An unembedding box at the top produces a prediction. Caption: the induction circuit, previous-token head feeding the induction head via the residual stream.](diagrams/induction-circuit.png)
 
 ---
 

@@ -79,13 +79,7 @@ Train the simplest possible model on MNIST:
 - Output: the model picks the class whose score is highest.
 - Training: 5 epochs of Adam with mini-batches of 256 (~1,170 steps/epoch). Gets to ~92% test accuracy. Far from state-of-the-art, fine for our purposes.
 
-> **Suggested diagram — the weight-reshape trick (the central insight)**
->
-> Why generate this: the whole interpretability move of this project is "take a row of the weight matrix, reshape it to the input image's shape, look at it." Seeing this pipeline visually makes the move click in a way text can't.
->
-> Prompt for ChatGPT image generation:
->
-> > A clean, textbook-style technical diagram showing a three-step pipeline arranged horizontally with arrows between steps. STEP 1 (left): a rectangle labelled "weight matrix W of shape (10, 784)" with one row highlighted in red — the row labelled "row 3 → digit '3'". STEP 2 (middle): an arrow labelled "reshape (28×28)" pointing to a 28×28 grid of small squares. STEP 3 (right): the same grid now showing a fuzzy red-on-white template that visually resembles a handwritten "3". Caption underneath: "Each row of W is a digit template. Reshaping makes it readable." Clean black-and-white technical diagram with one red-highlighted element; sans-serif labels; no decoration.
+![Three-step pipeline: weight matrix W of shape (10, 784) with row 3 highlighted; an arrow labelled "reshape (28×28)"; the reshaped row 3 rendered as a 28×28 image showing a fuzzy red template of the digit 3. Caption: each row of W is a digit template; reshaping makes it readable.](diagrams/weight-reshape-pipeline.png)
 
 After training, take the weight matrix `W` of shape `(10, 784)`. Each row is a 784-dim vector — one per digit class. Reshape each row to 28×28 and plot it as a heatmap.
 

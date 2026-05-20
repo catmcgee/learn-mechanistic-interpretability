@@ -98,13 +98,7 @@ By repeating step 3 for every (layer, head) pair, you get a heatmap of causal im
 
 This is the tool for converting "this head's pattern looks right" into "this head is causally necessary." Wang et al. introduced it in this form; it's now the bread and butter of mech interp on real models.
 
-> **Suggested diagram — the three-run activation-patching procedure**
->
-> Why generate this: the clean/corrupted/patched trio is the key idea and three separate boxes side by side make it click instantly.
->
-> Prompt for ChatGPT image generation:
->
-> > A horizontal three-panel comparison diagram. Each panel shows the same simple transformer architecture as a tall column of stacked boxes labelled "Layer 0", "Layer 1", … "Layer N". PANEL 1 titled "Clean run" (green border): input "John ... Mary ... John gave a drink to" enters at the bottom, flows up through the layers; output at top reads " Mary ✓"; arrows show information flowing normally; a small label says "logit diff = +3". PANEL 2 titled "Corrupted run" (red border): input "Mary ... John ... Mary gave a drink to" (the swap); output reads " John ✗"; label says "logit diff = −3". PANEL 3 titled "Patched run" (blue border): same corrupted input but ONE specific box inside one layer is highlighted in green with a small arrow labelled "← copied from clean cache"; output reads " Mary ✓"; label says "logit diff = +3 (RECOVERED)". Caption underneath: "If patching one activation restores the clean output, that activation is causally responsible." Clean technical diagram, sans-serif labels.
+![Three-panel activation-patching comparison. Clean run (green border): input "John … Mary … John gave a drink to", output "Mary ✓", logit diff = +3. Corrupted run (red border): input swapped to "Mary … John … Mary gave a drink to", output "John ✗", logit diff = −3. Patched run (blue border): same corrupted input but Layer 1 is highlighted with an arrow "copied from clean cache", output "Mary ✓", logit diff = +3 (RECOVERED). Caption: if patching one activation restores the clean output, that activation is causally responsible.](diagrams/activation-patching.png)
 
 ---
 

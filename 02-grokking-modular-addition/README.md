@@ -120,13 +120,7 @@ What we plot. Train loss and test loss vs step, both on a log scale, for ~25,000
 - Test loss stays bad — close to `log(113) ≈ 4.7`, which is the loss of random guessing among 113 classes — for a long time.
 - Then, somewhere around step 10,000–20,000, test loss falls off a cliff and reaches near zero. (Grokking — the wow moment.)
 
-> **Suggested diagram — the canonical grokking loss curve**
->
-> Why generate this: the shape of the loss curve is the discovery. Annotating the three phases (memorise, plateau, grok) on an idealised version helps readers know what to look for before they see their own messy real one.
->
-> Prompt for ChatGPT image generation:
->
-> > A 2D log-scale plot with x-axis labelled "training step" and y-axis labelled "loss (log)". Two curves: a blue "train loss" curve that starts high, drops sharply to near zero within the first ~500 steps, and stays flat near zero forever after; and an orange "test loss" curve that also starts high, stays flat at the high level for most of the plot (a long plateau), then suddenly drops off a cliff around step ~15000 and reaches near zero. Three labelled vertical bands shading the background in light pastel colours: "1. Memorisation (~0–1k)", "2. Plateau (~1k–15k)", and "3. Grokking (~15k+)". Title: "The grokking phenomenon: late, sudden generalisation after long memorisation." Clean technical plot style, sans-serif labels.
+![Log-scale loss curve showing the three phases of grokking. A blue train-loss curve drops sharply within the first ~500 steps and stays flat near zero. An orange test-loss curve stays high for a long plateau, then drops off a cliff around step ~15,000. Three labelled background bands: Memorisation (~0–1k), Plateau (~1k–15k), Grokking (~15k+).](diagrams/grokking-loss-curve.png)
 
 The reverse-engineering (stretch). We take the trained model's embedding matrix `W_E` (shape `(d_vocab, d_model)` — one vector per number `0..112` plus `=`). We do a discrete Fourier transform along the vocab dimension. We discover that almost all of the embedding energy lives in just a handful of Fourier frequencies — the model is representing each number as `cos(2πkx/p)` and `sin(2πkx/p)` for a small set of `k`. This is the Fourier algorithm the model has discovered, sitting right there in the embedding weights.
 
@@ -138,13 +132,7 @@ cos(2π·k·(a+b)/p) = cos(2π·k·a/p) · cos(2π·k·b/p) − sin(2π·k·a/p)
 
 If the model represents `a` and `b` as Fourier features, an MLP can implement that identity using multiplications and combinations. Then the unembedding reads out the answer at the right frequency. The whole thing is a clean, human-understandable algorithm — built by SGD, not by us.
 
-> **Suggested diagram — the Fourier algorithm the model learnt**
->
-> Why generate this: the trig-identity story is the most surprising payoff of the project. A diagram that shows numbers being mapped onto a circle (Fourier features) and then combined makes it concrete.
->
-> Prompt for ChatGPT image generation:
->
-> > A horizontal pipeline diagram with four boxes connected by arrows. BOX 1 (left): an integer `a` (e.g. `a = 37`). BOX 2: a unit circle in 2D with a point on it labelled `(cos(2π·k·a/113), sin(2π·k·a/113))` — labelled "embedding rotates a onto a circle (Fourier basis)". A separate parallel path beneath does the same for `b`. BOX 3 (middle, combining both paths): a small box labelled "MLP applies cos(α+β) = cos(α)cos(β) − sin(α)sin(β)". BOX 4 (right): a unit circle with a point at angle `2π·k·(a+b)/113`, labelled "result = (a+b) mod 113". Final arrow labels: "unembedding reads angle → predicted answer". Caption underneath: "The model discovered a Fourier algorithm for modular addition." Clean technical diagram, white background, sans-serif labels.
+![Four-step pipeline: (1) integer inputs a and b, (2) each embedded onto a unit circle at (cos(2π·k·x/113), sin(2π·k·x/113)) — the Fourier basis, (3) MLP combines them via cos(α+β) = cos(α)cos(β) − sin(α)sin(β), (4) result lands on the unit circle at angle 2π·k·(a+b)/113. Unembedding reads the angle to produce the predicted answer. Caption: the model discovered a Fourier algorithm for modular addition.](diagrams/fourier-algorithm.png)
 
 ---
 

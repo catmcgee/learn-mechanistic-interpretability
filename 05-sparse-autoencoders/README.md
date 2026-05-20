@@ -102,13 +102,7 @@ After training, each column of `W_dec` is one feature direction in the input act
 
 This is what fixes the superposition problem. The original model packs many features into fewer dimensions (project 1). The SAE projects back out into a higher-dimensional space where each feature can have its own dedicated dimension.
 
-> **Suggested diagram — base model in superposition vs SAE dictionary**
->
-> Why generate this: the relationship between the base model and the SAE is conceptually the whole point. A diagram showing them side by side, with the SAE "fanning out" the compressed features into a wide, sparse dictionary, makes it concrete.
->
-> Prompt for ChatGPT image generation:
->
-> > A two-panel diagram side by side. LEFT panel titled "Base model — features in superposition": a wide column of input feature labels (say 10 dots labelled feat 0..9) flowing into a narrow bottleneck box of 5 hidden neurons (5 dots labelled h0..h4). Multiple input features connect to each hidden neuron via overlapping coloured arrows — visually crowded, to suggest polysemanticity. Caption below: "10 features packed into 5 neurons. Each neuron carries pieces of many features." RIGHT panel titled "SAE — features unfolded": the same 5 hidden neurons on the LEFT side, now feeding into a wide SAE hidden layer of 20 features (20 dots) on the RIGHT side. Connections from the 5 input neurons to the 20 SAE features are clean and sparse — each SAE feature receives only a few connections. Most SAE feature dots are grey (inactive), with only 1-2 highlighted in bright colour (active for this input). Caption below: "SAE 'fans out' the superposed features into a sparse dictionary. Now each feature has its own slot." Above both panels a unifying title: "Sparse autoencoders recover features from a model trained in superposition." Clean technical diagram, sans-serif labels, white background.
+![Two-panel diagram. Left: "Base model — features in superposition" — 10 input features collapse into a 5-neuron bottleneck via overlapping coloured arrows, visually crowded; caption: 10 features packed into 5 neurons, each neuron carries pieces of many features. Right: "SAE — features unfolded" — the same 5 neurons feed a 20-feature SAE hidden layer via clean, sparse connections; most SAE features are grey (inactive) with only 1-2 highlighted; caption: SAE fans out the superposed features into a sparse dictionary, now each feature has its own slot. Title: sparse autoencoders recover features from a model trained in superposition.](diagrams/sae-vs-superposition.png)
 
 ---
 

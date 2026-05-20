@@ -1,10 +1,10 @@
-# Step 5 — Sparse autoencoders: closing the loop on superposition
+# Step 5 - Sparse autoencoders: closing the loop on superposition
 
 Step 5 of 6 in the mech interp curriculum. Assumes you've done steps 0-4. (You especially need step 1, which set up the problem this step solves.)
 
 We replicate the core idea of [Sparse Autoencoders Find Highly Interpretable Features in Language Models](https://arxiv.org/abs/2309.08600) (Cunningham, Ewart, Riggs, Huben, Sharkey; 2023) and [Towards Monosemanticity](https://transformer-circuits.pub/2023/monosemantic-features/index.html) (Bricken et al., Anthropic, 2023).
 
-The ONE new idea this step teaches: you can automatically discover the features a model uses, by training a separate "interpreter" model (a sparse autoencoder) on the original model's hidden activations. No hand-crafted prompts, no head-by-head patching — just train an SAE and read the dictionary it learns.
+The ONE new idea this step teaches: you can automatically discover the features a model uses, by training a separate "interpreter" model (a sparse autoencoder) on the original model's hidden activations. No hand-crafted prompts, no head-by-head patching - just train an SAE and read the dictionary it learns.
 
 This step closes the loop on the whole curriculum. Step 1 introduced superposition as the central obstacle of mech interp. Step 5 introduces SAEs, the field's current best partial solution.
 
@@ -12,14 +12,14 @@ By the end you'll have:
 
 - Trained a toy model that uses superposition (a slightly bigger version of step 1's setup).
 - Trained a sparse autoencoder on the model's hidden activations.
-- Verified that the SAE's learnt features recover the original model's ground-truth features — by cosine similarity, not by hand.
+- Verified that the SAE's learnt features recover the original model's ground-truth features - by cosine similarity, not by hand.
 
 ---
 
 ## Table of contents
 
 1. [Why this step exists](#1-why-this-step-exists)
-2. [Glossary — terms added in this step](#2-glossary--terms-added-in-this-step)
+2. [Glossary - terms added in this step](#2-glossary--terms-added-in-this-step)
 3. [What is a sparse autoencoder?](#3-what-is-a-sparse-autoencoder)
 4. [The experiment in plain English](#4-the-experiment-in-plain-english)
 5. [Section-by-section walkthrough of the notebook](#5-section-by-section-walkthrough-of-the-notebook)
@@ -31,13 +31,13 @@ By the end you'll have:
 
 ## 1. Why this step exists
 
-Step 1 named the problem: real models pack features in superposition, so individual neurons stop being interpretable. Steps 2–4 worked around that — finding circuits by hand, verifying them by hand. This step automates the feature-finding part.
+Step 1 named the problem: real models pack features in superposition, so individual neurons stop being interpretable. Steps 2–4 worked around that - finding circuits by hand, verifying them by hand. This step automates the feature-finding part.
 
 The pitch for an SAE in one sentence: train a wider autoencoder on the model's hidden activations, with a sparsity penalty, and the directions it learns will be the model's actual features.
 
 ---
 
-## 2. Glossary — terms added in this step
+## 2. Glossary - terms added in this step
 
 - **Sparse autoencoder (SAE)**: an autoencoder whose hidden layer is wider than its input, trained with a penalty that forces only a few hidden units to fire on any given input. The "wider hidden than input" part is essential: if the hidden layer is the same size as the input, the obvious solution is the identity function and no features get found.
 - **Dictionary learning**: the general field of "find a sparse representation of data as combinations of basis elements." SAEs are a specific neural-network version. The "dictionary" is the set of basis elements (= the SAE's decoder columns).
@@ -85,17 +85,17 @@ x̂ = W_dec @ h + b_dec
 Loss:
 
 ```
-L = ||x - x̂||²    (reconstruction — must faithfully decompose the input)
-  + λ ||h||₁      (sparsity — penalises the number of features used)
+L = ||x - x̂||²    (reconstruction - must faithfully decompose the input)
+  + λ ||h||₁      (sparsity - penalises the number of features used)
 ```
 
-The ReLU on `h` is essential — it means each feature can be off (`h_i = 0`) or active to varying degrees (`h_i > 0`), but never negative. Combined with the L1 penalty, the SAE is pushed toward solutions where most features are off and only a few fire on any given input.
+The ReLU on `h` is essential - it means each feature can be off (`h_i = 0`) or active to varying degrees (`h_i > 0`), but never negative. Combined with the L1 penalty, the SAE is pushed toward solutions where most features are off and only a few fire on any given input.
 
 After training, each column of `W_dec` is one feature direction in the input activation space. The SAE has learnt a dictionary of `d_sae` directions, and represents each input activation as a sparse, non-negative combination of those directions.
 
 This is what fixes the superposition problem. The original model packs many features into fewer dimensions (project 1). The SAE projects back out into a higher-dimensional space where each feature can have its own dedicated dimension.
 
-![Two-panel diagram. Left: "Base model — features in superposition" — 10 input features collapse into a 5-neuron bottleneck via overlapping coloured arrows, visually crowded; caption: 10 features packed into 5 neurons, each neuron carries pieces of many features. Right: "SAE — features unfolded" — the same 5 neurons feed a 20-feature SAE hidden layer via clean, sparse connections; most SAE features are grey (inactive) with only 1-2 highlighted; caption: SAE fans out the superposed features into a sparse dictionary, now each feature has its own slot. Title: sparse autoencoders recover features from a model trained in superposition.](diagrams/sae-vs-superposition.png)
+![Two-panel diagram. Left: "Base model - features in superposition" - 10 input features collapse into a 5-neuron bottleneck via overlapping coloured arrows, visually crowded; caption: 10 features packed into 5 neurons, each neuron carries pieces of many features. Right: "SAE - features unfolded" - the same 5 neurons feed a 20-feature SAE hidden layer via clean, sparse connections; most SAE features are grey (inactive) with only 1-2 highlighted; caption: SAE fans out the superposed features into a sparse dictionary, now each feature has its own slot. Title: sparse autoencoders recover features from a model trained in superposition.](diagrams/sae-vs-superposition.png)
 
 ---
 
@@ -120,7 +120,7 @@ The SAE: train a sparse autoencoder on the model's hidden activations.
 The test: after the SAE has trained, compute the cosine similarity between each SAE feature direction and each ground-truth feature direction. Build a 20×10 matrix and plot it. If the SAE has recovered the features:
 
 - Each ground-truth feature should be matched by at least one SAE feature with cosine similarity ≈ 1.
-- The SAE features not matched to any ground-truth feature are "dead" or redundant — that's normal.
+- The SAE features not matched to any ground-truth feature are "dead" or redundant - that's normal.
 
 This is the wow moment: the SAE didn't know about the 10 ground-truth features. It only ever saw 5-dim hidden activations from a trained model. With nothing but the L1 penalty as guidance, it recovers the original feature decomposition.
 
@@ -143,7 +143,7 @@ Sample a big batch of sparse inputs, push them through the model's encoder, get 
 Two `nn.Parameter`s for encoder and decoder weights plus biases. Forward pass is ReLU encoder → linear decoder, as described above. We tie decoder columns to have unit norm (a small trick that prevents the L1 penalty from being "cheated" by shrinking hidden activations and growing decoder weights).
 
 ### Section 5: Train the SAE
-AdamW + cosine schedule. We log reconstruction loss and L0 (the average number of active features per input). Healthy L0 is around the number of features the input is a mixture of — for high-sparsity inputs, that's ~1.
+AdamW + cosine schedule. We log reconstruction loss and L0 (the average number of active features per input). Healthy L0 is around the number of features the input is a mixture of - for high-sparsity inputs, that's ~1.
 
 ### Section 6: Compare SAE features to ground truth
 Compute cosine similarity between every pair of (SAE feature direction, ground-truth feature direction). Plot the 20×10 matrix as a heatmap.
@@ -162,7 +162,7 @@ What we just did, why it matters, and the realities of using SAEs on real LLMs (
 
 2. SAE training (Section 5): reconstruction loss drops to near zero; average L0 (number of active SAE features per input) is around 1-2, matching the input sparsity.
 
-3. Cosine similarity heatmap (Section 6): a 20×10 matrix where each ground-truth feature has at least one SAE feature with cosine similarity ≥ 0.95 (a near-perfect match). The matrix is sparse — most cells near zero, a clear "highway" of bright cells.
+3. Cosine similarity heatmap (Section 6): a 20×10 matrix where each ground-truth feature has at least one SAE feature with cosine similarity ≥ 0.95 (a near-perfect match). The matrix is sparse - most cells near zero, a clear "highway" of bright cells.
 
 4. Matched features plot (Section 7): for each of the 10 ground-truth features, an SAE feature that points in the same direction in 5-dim space.
 
@@ -173,7 +173,7 @@ If anything fails to converge, try increasing `n_sae_steps` to 10000 or adjustin
 ## 7. How to run it
 1. Go to [colab.research.google.com](https://colab.research.google.com).
 2. Upload `sparse_autoencoders.ipynb`.
-3. GPU is fine but unnecessary — this whole notebook runs on CPU in a few minutes.
+3. GPU is fine but unnecessary - this whole notebook runs on CPU in a few minutes.
 4. `Runtime → Run all`.
 
 ---
@@ -200,16 +200,16 @@ That's the toolkit. From here it's about scale, rigour, and applying it to quest
 
 ### Further reading
 
-- [Towards Monosemanticity](https://transformer-circuits.pub/2023/monosemantic-features/index.html) — Anthropic 2023. The first big "yes, SAEs really do find interpretable features on a real LM" paper.
-- [Sparse Autoencoders Find Highly Interpretable Features in Language Models](https://arxiv.org/abs/2309.08600) — Cunningham et al. 2023. The academic version.
-- [Scaling Monosemanticity](https://transformer-circuits.pub/2024/scaling-monosemanticity/) — Anthropic 2024. SAEs on a production-scale model. Source of the famous "Golden Gate Bridge feature".
-- [Anthropic Circuits Updates 2024-2025](https://transformer-circuits.pub/2024/april-update/index.html) — short, frequent posts about ongoing interp work. Read these to stay current.
-- [Neel Nanda's "200 Concrete Open Problems"](https://www.alignmentforum.org/posts/LbrPTJ4fmABEdEnLf/200-concrete-open-problems-in-mechanistic-interpretability) — pick one and try it.
+- [Towards Monosemanticity](https://transformer-circuits.pub/2023/monosemantic-features/index.html) - Anthropic 2023. The first big "yes, SAEs really do find interpretable features on a real LM" paper.
+- [Sparse Autoencoders Find Highly Interpretable Features in Language Models](https://arxiv.org/abs/2309.08600) - Cunningham et al. 2023. The academic version.
+- [Scaling Monosemanticity](https://transformer-circuits.pub/2024/scaling-monosemanticity/) - Anthropic 2024. SAEs on a production-scale model. Source of the famous "Golden Gate Bridge feature".
+- [Anthropic Circuits Updates 2024-2025](https://transformer-circuits.pub/2024/april-update/index.html) - short, frequent posts about ongoing interp work. Read these to stay current.
+- [Neel Nanda's "200 Concrete Open Problems"](https://www.alignmentforum.org/posts/LbrPTJ4fmABEdEnLf/200-concrete-open-problems-in-mechanistic-interpretability) - pick one and try it.
 
 ### Where to participate
 
-- [AlignmentForum / LessWrong](https://www.alignmentforum.org/) — most public discussion happens here.
-- [MATS](https://www.matsprogram.org/) — competitive research fellowship, common pipeline from self-taught to professional interp researcher.
-- [ARENA](https://www.arena.education/) — structured curriculum with more advanced exercises if you want to go deeper than these projects.
+- [AlignmentForum / LessWrong](https://www.alignmentforum.org/) - most public discussion happens here.
+- [MATS](https://www.matsprogram.org/) - competitive research fellowship, common pipeline from self-taught to professional interp researcher.
+- [ARENA](https://www.arena.education/) - structured curriculum with more advanced exercises if you want to go deeper than these projects.
 
 You're now ~6 months into mech interp by self-study, with a solid foundation. The next step is choosing one of the open problems from the top-level `README.md` and trying a small experiment of your own. That's how everyone in this field actually got started.

@@ -1,4 +1,4 @@
-# Step 4 — IOI in GPT-2 small: activation patching and causal circuits
+# Step 4 - IOI in GPT-2 small: activation patching and causal circuits
 
 Step 4 of 6 in the mech interp curriculum. Assumes you've done steps 0-3.
 
@@ -6,8 +6,8 @@ We replicate the core finding of [Interpretability in the Wild: a Circuit for In
 
 The TWO new ideas this step teaches (it's the densest project; one extra is unavoidable):
 
-1. Activation patching — the standard tool for causally verifying that a part of a model is responsible for a behaviour. Step 3 visualised attention patterns and inferred function; that's correlational. Activation patching gives causal evidence.
-2. Working with a pre-trained model you didn't build, via [TransformerLens](https://neelnanda-io.github.io/TransformerLens/). We load GPT-2 small (124M parameters — ~2000× bigger than the model we trained in step 3).
+1. Activation patching - the standard tool for causally verifying that a part of a model is responsible for a behaviour. Step 3 visualised attention patterns and inferred function; that's correlational. Activation patching gives causal evidence.
+2. Working with a pre-trained model you didn't build, via [TransformerLens](https://neelnanda-io.github.io/TransformerLens/). We load GPT-2 small (124M parameters - ~2000× bigger than the model we trained in step 3).
 
 By the end you'll have:
 
@@ -20,7 +20,7 @@ By the end you'll have:
 ## Table of contents
 
 1. [What's new in this step](#1-whats-new-in-this-step)
-2. [Glossary — terms added in this step](#2-glossary--terms-added-in-this-step)
+2. [Glossary - terms added in this step](#2-glossary--terms-added-in-this-step)
 3. [The IOI task](#3-the-ioi-task)
 4. [What is activation patching?](#4-what-is-activation-patching)
 5. [The experiment in plain English](#5-the-experiment-in-plain-english)
@@ -42,7 +42,7 @@ Everything else (attention, residual stream, circuits, etc.) you already know fr
 
 ---
 
-## 2. Glossary — terms added in this step
+## 2. Glossary - terms added in this step
 
 - **Pre-trained model**: a model someone else trained and released. We load it, freeze its weights, and study it.
 - **TransformerLens (TL)**: Python library for mech interp on HuggingFace transformers. Main class: `HookedTransformer`. Wraps a model and exposes every internal activation by name.
@@ -52,7 +52,7 @@ Everything else (attention, residual stream, circuits, etc.) you already know fr
 - **Clean vs corrupted prompt**: a matched pair. The clean prompt is the one where the model gets the right answer. The corrupted prompt is a small perturbation that breaks the right answer (e.g. by swapping the names). Patching activations from clean → corrupted and watching the prediction recover is the actual experiment.
 - **Logit difference (logit diff)**: `logit(correct_token) - logit(distractor_token)`. The standard IOI metric. Positive = model prefers the right answer.
 - **IO (Indirect Object)**: the correct name to predict in the IOI task. In `"John gave a drink to ___"` (after John and Mary were introduced), the IO is `Mary`.
-- **S (Subject)**: the wrong name — the one the model has to suppress. In the example above, `John`.
+- **S (Subject)**: the wrong name - the one the model has to suppress. In the example above, `John`.
 - **Name mover head**: an attention head that, at the final position, attends to the IO token and copies it to the output. The most causally important heads in the IOI circuit. In GPT-2 small, these are typically `L9H9`, `L9H6`, `L10H0`.
 - **S-inhibition head**: an upstream head that inhibits attention to the subject S. Without these, the name movers would copy S instead of IO. These typically sit a few layers earlier.
 
@@ -64,29 +64,29 @@ Take the prompt:
 
 > "When John and Mary went to the store, John gave a drink to ___"
 
-A fluent speaker fills in `Mary`. The reasoning: John is the subject of "gave," he can't be the indirect object too, so the recipient must be the other name introduced earlier — Mary.
+A fluent speaker fills in `Mary`. The reasoning: John is the subject of "gave," he can't be the indirect object too, so the recipient must be the other name introduced earlier - Mary.
 
 GPT-2 small handles this correctly. The interesting question is how. The model has 12 layers and 144 attention heads. Some specific heads, working together, must be implementing "look at the names mentioned earlier, suppress the one that's also the subject of the current verb, predict the other one."
 
 Wang et al. fully reverse-engineered this circuit. The names they gave to the head groups:
 
-1. Duplicate token heads — notice that one name appears twice (`John` ... `John`).
-2. Previous token heads — communicate "what came before me" along the sequence.
-3. Induction heads — yes, the same induction heads from step 3; they do supporting work here.
-4. S-inhibition heads — read the duplicate-token signal and write a "don't attend to S" message into the residual stream.
-5. Name mover heads — at the final position, read the inhibition message and the list of candidate names, attend to the non-subject name (the IO), and copy it to the output.
+1. Duplicate token heads - notice that one name appears twice (`John` ... `John`).
+2. Previous token heads - communicate "what came before me" along the sequence.
+3. Induction heads - yes, the same induction heads from step 3; they do supporting work here.
+4. S-inhibition heads - read the duplicate-token signal and write a "don't attend to S" message into the residual stream.
+5. Name mover heads - at the final position, read the inhibition message and the list of candidate names, attend to the non-subject name (the IO), and copy it to the output.
 
-This is a 5-component circuit with about 15 specific heads. We won't replicate all of it — only the cleanest, most striking part: finding the name mover heads via activation patching.
+This is a 5-component circuit with about 15 specific heads. We won't replicate all of it - only the cleanest, most striking part: finding the name mover heads via activation patching.
 
 ---
 
 ## 4. What is activation patching?
 
-Suppose you've found some heads whose attention patterns look like they might be relevant. Are they actually doing the work? Visualisation alone can't tell you — a head might look meaningful but be downstream-ablatable with no effect.
+Suppose you've found some heads whose attention patterns look like they might be relevant. Are they actually doing the work? Visualisation alone can't tell you - a head might look meaningful but be downstream-ablatable with no effect.
 
 The standard test:
 
-1. Clean run: feed the model the original prompt. Cache every activation. Record the logit diff (positive — model gets it right).
+1. Clean run: feed the model the original prompt. Cache every activation. Record the logit diff (positive - model gets it right).
 2. Corrupted run: feed the model a near-identical prompt where the right answer is now the wrong one. E.g. swap the names: `"When Mary and John went to the store, Mary gave a drink to ___"` (correct answer is now `John`, not `Mary`). Logit diff on the original labels (`logit(Mary) − logit(John)`) is now strongly negative.
 3. Patched run: re-run the corrupted prompt, but at one specific point in the model, replace that activation with its clean-run value. Then continue the forward pass. Measure the new logit diff.
 
@@ -126,7 +126,7 @@ recovery = (patched_diff - corrupted_diff) / (clean_diff - corrupted_diff)
 
 `0%` = patching had no effect. `100%` = patching fully restored the clean prediction.
 
-The expected result. A 12×12 heatmap of recovery percentages. Most cells will be near zero. A small number of cells in the middle-to-late layers will light up strongly — these are the name mover heads (commonly `L9H9`, `L9H6`, `L10H0`, `L10H10` in GPT-2 small).
+The expected result. A 12×12 heatmap of recovery percentages. Most cells will be near zero. A small number of cells in the middle-to-late layers will light up strongly - these are the name mover heads (commonly `L9H9`, `L9H6`, `L10H0`, `L10H10` in GPT-2 small).
 
 ---
 
@@ -156,7 +156,7 @@ Loop over all 144 heads. Computes recovery for each. Takes.
 A 12×12 grid showing recovery percentage per head. The name movers should stand out clearly.
 
 ### Section 8: Look at the name movers' attention patterns
-For each head with high recovery, plot its attention pattern on a clean prompt. You should see attention from the final token to the IO position — confirming the "it's looking at the right name" story.
+For each head with high recovery, plot its attention pattern on a clean prompt. You should see attention from the final token to the IO position - confirming the "it's looking at the right name" story.
 
 ### Section 9: Discussion
 What we found, what we didn't (the rest of the circuit), and the conceptual difference between activation patching and the visualisation we did in step 3.
@@ -181,22 +181,22 @@ Exact head indices may shift slightly depending on the TransformerLens version's
 3. `Runtime → Change runtime type → GPU`. T4 is fine.
 4. `Runtime → Run all`. First run takes(most is downloading GPT-2 and the patching sweep). Subsequent runs are faster (the model is cached).
 
-If your Colab session keeps dying or out-of-memorying, swap GPT-2 small for a smaller model (e.g. `gpt2`, `attn-only-1l`, or `pythia-70m`) — `HookedTransformer.from_pretrained` supports many.
+If your Colab session keeps dying or out-of-memorying, swap GPT-2 small for a smaller model (e.g. `gpt2`, `attn-only-1l`, or `pythia-70m`) - `HookedTransformer.from_pretrained` supports many.
 
 ---
 
 ## 9. Where to go next
 
-You now have a real tool — activation patching — that you can apply to any hypothesis about any pre-trained model. From here:
+You now have a real tool - activation patching - that you can apply to any hypothesis about any pre-trained model. From here:
 
-- Step 5 (Sparse autoencoders) will introduce automatic feature finding — instead of manually constructing prompts and patching one head at a time, an SAE recovers an entire dictionary of interpretable features at once. It closes the loop with step 1 (superposition).
+- Step 5 (Sparse autoencoders) will introduce automatic feature finding - instead of manually constructing prompts and patching one head at a time, an SAE recovers an entire dictionary of interpretable features at once. It closes the loop with step 1 (superposition).
 
 ### Further reading
 
-- [Interpretability in the Wild: A Circuit for Indirect Object Identification in GPT-2 small](https://arxiv.org/abs/2211.00593) — the original Wang et al. paper. Long but skimmable.
-- [Causal Scrubbing](https://www.alignmentforum.org/posts/JvZhhzycHu2Yd57RN/causal-scrubbing-a-method-for-rigorously-testing) — Redwood Research's much stricter version of activation patching. The current gold standard for "is this really the circuit?"
-- [Path Patching](https://arxiv.org/abs/2304.05969) — patches paths between specific components, not just whole activations. Lets you distinguish "head A directly affects head B" from "head A indirectly affects head B through everything else."
-- [ARENA Chapter 1.4](https://arena3-chapter1-transformer-interp.streamlit.app/) — guided exercises that reproduce more of the IOI circuit step by step.
+- [Interpretability in the Wild: A Circuit for Indirect Object Identification in GPT-2 small](https://arxiv.org/abs/2211.00593) - the original Wang et al. paper. Long but skimmable.
+- [Causal Scrubbing](https://www.alignmentforum.org/posts/JvZhhzycHu2Yd57RN/causal-scrubbing-a-method-for-rigorously-testing) - Redwood Research's much stricter version of activation patching. The current gold standard for "is this really the circuit?"
+- [Path Patching](https://arxiv.org/abs/2304.05969) - patches paths between specific components, not just whole activations. Lets you distinguish "head A directly affects head B" from "head A indirectly affects head B through everything else."
+- [ARENA Chapter 1.4](https://arena3-chapter1-transformer-interp.streamlit.app/) - guided exercises that reproduce more of the IOI circuit step by step.
 
 ### A note on what mech interp actually looks like at this stage
 

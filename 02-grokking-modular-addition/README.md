@@ -1,14 +1,14 @@
-# Grokking modular addition — replicating Neel Nanda's signature paper
+# Grokking modular addition - replicating Neel Nanda's signature paper
 
-This is project 2 in our mech interp series. We replicate the core finding of [Progress Measures for Grokking via Mechanistic Interpretability](https://arxiv.org/abs/2301.05217) (Nanda, Chan, Lieberum, Smith, Steinhardt — 2023), one of the most striking results in mech interp.
+This is project 2 in our mech interp series. We replicate the core finding of [Progress Measures for Grokking via Mechanistic Interpretability](https://arxiv.org/abs/2301.05217) (Nanda, Chan, Lieberum, Smith, Steinhardt - 2023), one of the most striking results in mech interp.
 
 By the end you'll have:
 
 - Trained a tiny 1-layer transformer on a simple maths problem and watched it do something genuinely strange: sit at ~chance performance for thousands of training steps, then suddenly "wake up" and generalise perfectly.
-- A mechanistic explanation for that delayed generalisation — you'll look inside the trained model and discover it learnt a trigonometric algorithm based on the Fourier basis.
+- A mechanistic explanation for that delayed generalisation - you'll look inside the trained model and discover it learnt a trigonometric algorithm based on the Fourier basis.
 - Your first transformer, built from scratch in PyTorch.
 
-This is the spiritual successor to project 1 (Toy Models of Superposition). Same recipe — train a small model from scratch, then reverse-engineer it — but now we get to use a transformer.
+This is the spiritual successor to project 1 (Toy Models of Superposition). Same recipe - train a small model from scratch, then reverse-engineer it - but now we get to use a transformer.
 
 ---
 
@@ -16,7 +16,7 @@ This is the spiritual successor to project 1 (Toy Models of Superposition). Same
 
 1. [What is grokking?](#1-what-is-grokking)
 2. [The task: modular addition](#2-the-task-modular-addition)
-3. [Glossary — terms you'll see throughout](#3-glossary--terms-youll-see-throughout)
+3. [Glossary - terms you'll see throughout](#3-glossary--terms-youll-see-throughout)
 4. [The experiment in plain English](#4-the-experiment-in-plain-english)
 5. [Just enough transformer to follow along](#5-just-enough-transformer-to-follow-along)
 6. [Section-by-section walkthrough of the notebook](#6-section-by-section-walkthrough-of-the-notebook)
@@ -32,15 +32,15 @@ In normal supervised learning, a model's training loss and test loss both improv
 
 Grokking is what happens when those two curves come apart in a really weird way:
 
-1. Memorisation phase (steps 0 → ~1k): training loss drops to near zero — the model has memorised the answers to every training example. Test loss stays at chance level — the model has learnt nothing generalisable.
+1. Memorisation phase (steps 0 → ~1k): training loss drops to near zero - the model has memorised the answers to every training example. Test loss stays at chance level - the model has learnt nothing generalisable.
 2. Plateau (steps ~1k → ~10k+): training loss stays low, test loss stays bad. Looks like the model has just memorised and that's it. For a long, long time.
-3. Grokking (suddenly, much later): test loss falls off a cliff and reaches near-zero. The model has, somehow, figured out the underlying rule and now generalises perfectly — long after it could have just stopped at memorisation.
+3. Grokking (suddenly, much later): test loss falls off a cliff and reaches near-zero. The model has, somehow, figured out the underlying rule and now generalises perfectly - long after it could have just stopped at memorisation.
 
 This was first reported by [Power et al. 2022](https://arxiv.org/abs/2201.02177) ("Grokking: Generalisation Beyond Overfitting on Small Algorithmic Datasets") at OpenAI. They observed it but had no mechanistic explanation.
 
 Neel Nanda's 2023 paper took the same setup, fully reverse-engineered the trained model, and showed exactly what was happening: during the "boring" plateau, the model was slowly building up a generalising circuit alongside the memorised solution. When the circuit got good enough, it took over.
 
-That circuit is what makes this whole thing beautiful — it's a clean, human-understandable algorithm based on Fourier series. We'll find it.
+That circuit is what makes this whole thing beautiful - it's a clean, human-understandable algorithm based on Fourier series. We'll find it.
 
 ---
 
@@ -48,7 +48,7 @@ That circuit is what makes this whole thing beautiful — it's a clean, human-un
 
 The model learns to add two numbers modulo a prime `p`.
 
-Pick `p = 113`. The model sees three input tokens — `a`, `b`, `=` — where `a, b ∈ {0, 1, ..., 112}`, and has to predict the answer `(a + b) mod 113` at the `=` position.
+Pick `p = 113`. The model sees three input tokens - `a`, `b`, `=` - where `a, b ∈ {0, 1, ..., 112}`, and has to predict the answer `(a + b) mod 113` at the `=` position.
 
 Examples:
 
@@ -59,11 +59,11 @@ Examples:
 
 There are `113 × 113 = 12,769` total possible `(a, b)` pairs. We train on a random 30% of them and test on the remaining 70%. With this setup, the model has plenty of room to overfit (memorise the 30%) but only generalises if it learns the actual rule.
 
-The choice of `p` being prime matters — it makes the maths have nice Fourier structure, which is what the model ends up exploiting.
+The choice of `p` being prime matters - it makes the maths have nice Fourier structure, which is what the model ends up exploiting.
 
 ---
 
-## 3. Glossary — terms added in this step
+## 3. Glossary - terms added in this step
 
 Just the new ones. For earlier terms (feature, direction, dimension, superposition) see the step 1 glossary.
 
@@ -71,9 +71,9 @@ Just the new ones. For earlier terms (feature, direction, dimension, superpositi
 
 - **Grokking**: late, delayed generalisation. The phenomenon this project is about.
 - **Memorisation**: the model perfectly fits training data without learning a rule. Looks like learning but doesn't transfer to new examples.
-- **Generalisation**: the model performs well on examples it has never seen — evidence that it learnt the underlying rule, not the table of answers.
+- **Generalisation**: the model performs well on examples it has never seen - evidence that it learnt the underlying rule, not the table of answers.
 - **Train / test split**: a random partition of the data. The model only ever sees the train half during training; the test half is used to measure whether it actually learnt a generalising rule.
-- **Weight decay**: a regularisation technique that pulls weights toward zero. Crucial for grokking — without weight decay, grokking does not happen. We'll explain why below.
+- **Weight decay**: a regularisation technique that pulls weights toward zero. Crucial for grokking - without weight decay, grokking does not happen. We'll explain why below.
 - **AdamW**: the variant of the Adam optimiser that implements weight decay correctly. Just use it; you don't need to understand the details. (In code you'll see it spelt `optimizer` because PyTorch uses American spelling.)
 
 **Transformer anatomy**
@@ -81,13 +81,13 @@ Just the new ones. For earlier terms (feature, direction, dimension, superpositi
 - **Token**: a single discrete input symbol. In our setup, the vocabulary is 114 tokens (`0`, `1`, …, `112`, `=`), and each input sequence has 3 tokens (`a`, `b`, `=`).
 - **Vocabulary** (`d_vocab`): how many distinct tokens exist. For us, `114`.
 - **Embedding** (`W_E`): a learnable lookup table that maps each token to a vector of size `d_model`. The very first thing the model does to your input.
-- **Positional embedding** (`W_pos`): a small learnable vector added per position in the sequence — lets the model tell apart "this is the first input" vs "this is the second input."
-- **Residual stream**: the running vector at each position as it flows through the layers. The transformer's "main bus" — every component reads from it and writes back into it.
+- **Positional embedding** (`W_pos`): a small learnable vector added per position in the sequence - lets the model tell apart "this is the first input" vs "this is the second input."
+- **Residual stream**: the running vector at each position as it flows through the layers. The transformer's "main bus" - every component reads from it and writes back into it.
 - **Attention head**: a component that lets the model mix information across positions. We have 4 heads in 1 layer.
 - **MLP** (multilayer perceptron): a simple stack of linear layers with a nonlinearity in between (`linear → ReLU → linear`). Sits after attention and does per-position computation.
-- **Unembedding** (`W_U`): a final linear layer that maps the `d_model`-sized vector back to `d_vocab` logits — one score per possible output token. The model picks the one with the highest score.
+- **Unembedding** (`W_U`): a final linear layer that maps the `d_model`-sized vector back to `d_vocab` logits - one score per possible output token. The model picks the one with the highest score.
 - **Logits**: the raw, unnormalised scores the model outputs. Softmax of the logits gives a probability distribution over tokens.
-- **Cross-entropy loss**: the standard classification loss — penalises low predicted probability for the correct answer.
+- **Cross-entropy loss**: the standard classification loss - penalises low predicted probability for the correct answer.
 
 **Mech interp / Fourier**
 
@@ -105,17 +105,17 @@ The model. A 1-layer transformer with 4 attention heads, hidden size `d_model=12
 
 The data. All `113 × 113 = 12,769` pairs `(a, b)`, each labelled with `(a+b) mod 113`. We split randomly into 30% train, 70% test.
 
-Training. AdamW with learning rate `1e-3` and weight decay 1.0 (this is large — weight decay is doing serious work here). Full-batch (we use all 3,830 training examples per step). Cross-entropy loss on the prediction at the `=` position.
+Training. AdamW with learning rate `1e-3` and weight decay 1.0 (this is large - weight decay is doing serious work here). Full-batch (we use all 3,830 training examples per step). Cross-entropy loss on the prediction at the `=` position.
 
 What we plot. Train loss and test loss vs step, both on a log scale, for ~25,000 steps. You should see:
 
 - Train loss crashes to near zero within the first ~500 steps. (Memorisation)
-- Test loss stays bad — close to `log(113) ≈ 4.7`, which is the loss of random guessing among 113 classes — for a long time.
-- Then, somewhere around step 10,000–20,000, test loss falls off a cliff and reaches near zero. (Grokking — the wow moment.)
+- Test loss stays bad - close to `log(113) ≈ 4.7`, which is the loss of random guessing among 113 classes - for a long time.
+- Then, somewhere around step 10,000–20,000, test loss falls off a cliff and reaches near zero. (Grokking - the wow moment.)
 
 ![Log-scale loss curve showing the three phases of grokking. A blue train-loss curve drops sharply within the first ~500 steps and stays flat near zero. An orange test-loss curve stays high for a long plateau, then drops off a cliff around step ~15,000. Three labelled background bands: Memorisation (~0–1k), Plateau (~1k–15k), Grokking (~15k+).](diagrams/grokking-loss-curve.png)
 
-The reverse-engineering (stretch). We take the trained model's embedding matrix `W_E` (shape `(d_vocab, d_model)` — one vector per number `0..112` plus `=`). We do a discrete Fourier transform along the vocab dimension. We discover that almost all of the embedding energy lives in just a handful of Fourier frequencies — the model is representing each number as `cos(2πkx/p)` and `sin(2πkx/p)` for a small set of `k`. This is the Fourier algorithm the model has discovered, sitting right there in the embedding weights.
+The reverse-engineering (stretch). We take the trained model's embedding matrix `W_E` (shape `(d_vocab, d_model)` - one vector per number `0..112` plus `=`). We do a discrete Fourier transform along the vocab dimension. We discover that almost all of the embedding energy lives in just a handful of Fourier frequencies - the model is representing each number as `cos(2πkx/p)` and `sin(2πkx/p)` for a small set of `k`. This is the Fourier algorithm the model has discovered, sitting right there in the embedding weights.
 
 Why does this work mathematically? The trig identity:
 
@@ -123,9 +123,9 @@ Why does this work mathematically? The trig identity:
 cos(2π·k·(a+b)/p) = cos(2π·k·a/p) · cos(2π·k·b/p) − sin(2π·k·a/p) · sin(2π·k·b/p)
 ```
 
-If the model represents `a` and `b` as Fourier features, an MLP can implement that identity using multiplications and combinations. Then the unembedding reads out the answer at the right frequency. The whole thing is a clean, human-understandable algorithm — built by SGD, not by us.
+If the model represents `a` and `b` as Fourier features, an MLP can implement that identity using multiplications and combinations. Then the unembedding reads out the answer at the right frequency. The whole thing is a clean, human-understandable algorithm - built by SGD, not by us.
 
-![Four-step pipeline: (1) integer inputs a and b, (2) each embedded onto a unit circle at (cos(2π·k·x/113), sin(2π·k·x/113)) — the Fourier basis, (3) MLP combines them via cos(α+β) = cos(α)cos(β) − sin(α)sin(β), (4) result lands on the unit circle at angle 2π·k·(a+b)/113. Unembedding reads the angle to produce the predicted answer. Caption: the model discovered a Fourier algorithm for modular addition.](diagrams/fourier-algorithm.png)
+![Four-step pipeline: (1) integer inputs a and b, (2) each embedded onto a unit circle at (cos(2π·k·x/113), sin(2π·k·x/113)) - the Fourier basis, (3) MLP combines them via cos(α+β) = cos(α)cos(β) − sin(α)sin(β), (4) result lands on the unit circle at angle 2π·k·(a+b)/113. Unembedding reads the angle to produce the predicted answer. Caption: the model discovered a Fourier algorithm for modular addition.](diagrams/fourier-algorithm.png)
 
 ---
 
@@ -144,7 +144,7 @@ tokens (a, b, =)
    └──────────┘  + positional embedding W_pos (per-position offset)
         │
         ▼
-  [residual stream — a (3, 128) tensor: 3 positions × 128 features each]
+  [residual stream - a (3, 128) tensor: 3 positions × 128 features each]
         │
         ▼
    ┌──────────┐
@@ -175,9 +175,9 @@ Three concepts you need to internalise:
 
 ### 5.1 The residual stream
 
-The transformer keeps a running `(n_positions, d_model)` tensor that flows through the layers. For us this is `(3, 128)` — three positions (one for `a`, one for `b`, one for `=`), each holding a 128-dim vector.
+The transformer keeps a running `(n_positions, d_model)` tensor that flows through the layers. For us this is `(3, 128)` - three positions (one for `a`, one for `b`, one for `=`), each holding a 128-dim vector.
 
-Every component (embedding, attention, MLP) reads from this tensor and adds its output back into it. Nothing is destructively overwritten. This is the "residual" part — outputs are added, not replaced.
+Every component (embedding, attention, MLP) reads from this tensor and adds its output back into it. Nothing is destructively overwritten. This is the "residual" part - outputs are added, not replaced.
 
 Think of the residual stream as the model's working memory: a shared whiteboard that every component reads from and writes to.
 
@@ -204,9 +204,9 @@ Why does this matter for grokking? Roughly: there are two ways to solve the task
 - Memorisation: store a giant lookup table of (a, b) → answer in the weights. This works perfectly on the train set but uses a lot of weight "mass."
 - Generalisation: learn a small, clean Fourier algorithm. Uses very little weight mass.
 
-Without weight decay, the model is happy to sit at memorisation forever — both solutions get loss 0 on train, and there's no pressure to find the cleaner one. With weight decay, big-weight memorisation is penalised. The model has to slowly carve out the smaller, cleaner generalising solution. That carving is what we see as the long plateau, and grokking is the moment the cleaner solution becomes good enough to take over.
+Without weight decay, the model is happy to sit at memorisation forever - both solutions get loss 0 on train, and there's no pressure to find the cleaner one. With weight decay, big-weight memorisation is penalised. The model has to slowly carve out the smaller, cleaner generalising solution. That carving is what we see as the long plateau, and grokking is the moment the cleaner solution becomes good enough to take over.
 
-This is why the paper is called Progress Measures — even during the plateau, weight decay is slowly squeezing weight mass from the memorised solution into the generalising one. The progress is real but invisible in the loss curves until the crossover.
+This is why the paper is called Progress Measures - even during the plateau, weight decay is slowly squeezing weight mass from the memorised solution into the generalising one. The progress is real but invisible in the loss curves until the crossover.
 
 ---
 
@@ -218,7 +218,7 @@ The notebook is `grokking.ipynb`. Each section below maps to a section in the no
 Imports, device, seeds. Same as before.
 
 ### Section 2: Hyperparameters
-A single cell of constants — `p = 113`, `d_model = 128`, `n_heads = 4`, `d_head = 32`, `d_mlp = 512`, `train_frac = 0.3`, `weight_decay = 1.0`, `n_steps = 25_000`, etc. Keeping them in one place makes experiments easier.
+A single cell of constants - `p = 113`, `d_model = 128`, `n_heads = 4`, `d_head = 32`, `d_mlp = 512`, `train_frac = 0.3`, `weight_decay = 1.0`, `n_steps = 25_000`, etc. Keeping them in one place makes experiments easier.
 
 ### Section 3: The data
 Generate all `p²` pairs `(a, b)` with their labels `(a+b) mod p`. Format each example as a length-3 sequence `[a, b, p]` where token `p` is used as the `=` marker (we just stuff `=` into the same vocab as a 114th token at index `p`). Random shuffle, take the first 30% as train.
@@ -231,7 +231,7 @@ A hand-rolled tiny transformer in ~50 lines of PyTorch. We define:
 - An `MLP` layer (linear → ReLU → linear).
 - A `Transformer` class that stacks them, applies the unembedding, returns logits at the `=` position.
 
-Hand-rolled is the mech-interp tradition — using `nn.Transformer` would hide the internals we want to inspect.
+Hand-rolled is the mech-interp tradition - using `nn.Transformer` would hide the internals we want to inspect.
 
 ### Section 5: Training
 Standard loop, AdamW, cross-entropy on the `=`-position logits. Every 100 steps we record both train loss and test loss, so we can plot them at the end. ~25k steps takeson a Colab T4.
@@ -240,7 +240,7 @@ Standard loop, AdamW, cross-entropy on the `=`-position logits. Every 100 steps 
 The headline plot. Train loss vs test loss vs step, log scale. This is the wow moment. You'll see the train loss crash to zero almost immediately, then a long flat plateau on test loss, then a sudden cliff. We mark the rough memorisation phase, plateau, and grokking phase on the plot.
 
 ### Section 7 (stretch): Fourier analysis of the embedding
-We take the trained `W_E` matrix and do an FFT along the vocabulary axis. We then plot the magnitude of each Fourier component across hidden dimensions. The plot should show that energy is concentrated in just a handful of frequencies — the model has rediscovered the Fourier basis.
+We take the trained `W_E` matrix and do an FFT along the vocabulary axis. We then plot the magnitude of each Fourier component across hidden dimensions. The plot should show that energy is concentrated in just a handful of frequencies - the model has rediscovered the Fourier basis.
 
 ### Section 8: Discussion
 Why what you just saw matters. Why the paper is called "Progress Measures." How it connects to the broader story about generalisation, simplicity bias, and singular learning theory.
@@ -253,11 +253,11 @@ Concrete expectations:
 
 1. Train loss curve (Section 6): drops from ~`log(113) ≈ 4.7` to under `0.01` within the first few hundred steps. Then stays near zero forever.
 
-2. Test loss curve (Section 6): stays near `4.7` (random-guess level) for thousands of steps, then drops suddenly — over a few hundred steps — to under `0.01`. The grokking transition is sharp, not gradual.
+2. Test loss curve (Section 6): stays near `4.7` (random-guess level) for thousands of steps, then drops suddenly - over a few hundred steps - to under `0.01`. The grokking transition is sharp, not gradual.
 
 3. When does grokking happen? Somewhere between step 8,000 and 20,000 with our hyperparameters. The exact step varies with the random seed; that's normal. If you're past step 25,000 and test loss is still high, weight decay or learning rate is probably off.
 
-4. Fourier plot (Section 7, stretch): the FFT of `W_E` should be sparse — most frequencies near zero, but a handful (typically 3-6) of "key frequencies" with large magnitudes. Those are the trig functions the model has learnt to use.
+4. Fourier plot (Section 7, stretch): the FFT of `W_E` should be sparse - most frequencies near zero, but a handful (typically 3-6) of "key frequencies" with large magnitudes. Those are the trig functions the model has learnt to use.
 
 ---
 
@@ -267,24 +267,24 @@ Concrete expectations:
 3. `Runtime → Change runtime type → GPU` (T4 is fine and free).
 4. `Runtime → Run all`. The model trains for; the rest takes seconds.
 
-If you want to skip training and just play with the analysis, you could save the trained weights at the end of Section 5 and reload them — we don't bother with that here but it's a one-liner.
+If you want to skip training and just play with the analysis, you could save the trained weights at the end of Section 5 and reload them - we don't bother with that here but it's a one-liner.
 
 ---
 
 ## 9. Where to go next
 
-Next in the curriculum: [`03-induction-heads/`](../03-induction-heads/) — your first multi-layer transformer, and your first reverse-engineered circuit (two attention heads cooperating across layers). The transformer code from this project carries over almost unchanged.
+Next in the curriculum: [`03-induction-heads/`](../03-induction-heads/) - your first multi-layer transformer, and your first reverse-engineered circuit (two attention heads cooperating across layers). The transformer code from this project carries over almost unchanged.
 
 Other things to try with the model you just built:
 
 - Compute proper progress measures: the paper introduces three of them (restricted loss, excluded loss, Gini coefficient of Fourier components). They smoothly track the slow build-up of the circuit. Plotting them during training instead of post-hoc makes the "hidden progress" story really vivid.
 - Reverse-engineer the MLP and the attention head: the embedding is just the start. Neel's full writeup shows that the MLP implements the trig product-to-sum identity, and the attention head reads out the right Fourier component at the `=` position. Full circuit-level interp.
 - Try other algorithmic tasks: multiplication mod p, group operations, sorting. Grokking shows up across many algorithmic tasks; the underlying circuits differ.
-- Connect to project 1: the Fourier features in the embedding are themselves in superposition — multiple frequencies sharing 128 hidden dimensions. Both projects are looking at the same phenomenon (compressed feature representations) from different angles. Step 5 of this curriculum closes the loop by training an SAE to recover features from a superposed model.
+- Connect to project 1: the Fourier features in the embedding are themselves in superposition - multiple frequencies sharing 128 hidden dimensions. Both projects are looking at the same phenomenon (compressed feature representations) from different angles. Step 5 of this curriculum closes the loop by training an SAE to recover features from a superposed model.
 
 ### Reading
 
 - The paper itself: [Progress measures for grokking via mechanistic interpretability](https://arxiv.org/abs/2301.05217).
-- Neel Nanda's [blog post version](https://www.alignmentforum.org/posts/N6WM6hs7RQMKDhYjB/a-mechanistic-interpretability-analysis-of-grokking) — more accessible than the paper.
-- Neel's [grokking demo Colab](https://colab.research.google.com/github/neelnanda-io/Easy-Transformer/blob/main/Grokking_Demo.ipynb) — the original reference implementation.
-- [Power et al. 2022](https://arxiv.org/abs/2201.02177) — the original "grokking" paper that observed the phenomenon.
+- Neel Nanda's [blog post version](https://www.alignmentforum.org/posts/N6WM6hs7RQMKDhYjB/a-mechanistic-interpretability-analysis-of-grokking) - more accessible than the paper.
+- Neel's [grokking demo Colab](https://colab.research.google.com/github/neelnanda-io/Easy-Transformer/blob/main/Grokking_Demo.ipynb) - the original reference implementation.
+- [Power et al. 2022](https://arxiv.org/abs/2201.02177) - the original "grokking" paper that observed the phenomenon.

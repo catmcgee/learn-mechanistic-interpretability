@@ -12,35 +12,17 @@ By the end you'll have:
 
 ## Table of contents
 
-1. [What is mechanistic interpretability?](#1-what-is-mechanistic-interpretability)
-2. [What is superposition? (the one big idea)](#2-what-is-superposition-the-one-big-idea)
-3. [Glossary — terms you'll see throughout](#3-glossary--terms-youll-see-throughout)
-4. [The experiment in plain English](#4-the-experiment-in-plain-english)
-5. [Just enough PyTorch to follow along](#5-just-enough-pytorch-to-follow-along)
-6. [Section-by-section walkthrough of the notebook](#6-section-by-section-walkthrough-of-the-notebook)
-7. [What you should see when you run it](#7-what-you-should-see-when-you-run-it)
-8. [How to run it](#8-how-to-run-it)
-9. [Where to go next](#9-where-to-go-next)
+1. [What is superposition? (the one big idea)](#1-what-is-superposition-the-one-big-idea)
+2. [Glossary — terms added in this step](#2-glossary--terms-added-in-this-step)
+3. [The experiment in plain English](#3-the-experiment-in-plain-english)
+4. [Section-by-section walkthrough of the notebook](#4-section-by-section-walkthrough-of-the-notebook)
+5. [What you should see when you run it](#5-what-you-should-see-when-you-run-it)
+6. [How to run it](#6-how-to-run-it)
+7. [Where to go next](#7-where-to-go-next)
 
 ---
 
-## 1. What is mechanistic interpretability?
-
-When you train a neural network, you end up with millions (or billions) of numbers — weights — that somehow produce intelligent-looking behaviour. Nobody hand-designed those numbers; gradient descent did. They look like noise.
-
-Mech interp is the project of opening those models up and figuring out, in human-readable terms, what algorithm the weights implement. The dream is a sort of "decompiler" for neural nets.
-
-A few quick examples of what mech interp has discovered:
-
-- **Induction heads**: in transformers, a specific pair of attention heads implements an in-context "copy-and-continue" algorithm. This is most of how a language model learns from earlier in its prompt.
-- **Indirect object identification (IOI)**: in GPT-2 small, researchers traced the exact circuit (a handful of attention heads working together) that resolves which name to predict in sentences like "When John and Mary went to the store, John gave a drink to ___".
-- **Sparse autoencoders (SAEs)**: trained on real LLM activations, these recover thousands of human-interpretable "features" — directions in activation space that correspond to single concepts like "Golden Gate Bridge" or "Python comment".
-
-[Neel Nanda](https://www.neelnanda.io/) is one of the main researchers and teachers in the field. This project is in the spirit of his "200 Concrete Problems" intro list — small, runnable on a laptop, with a real "aha" moment.
-
----
-
-## 2. What is superposition? (the one big idea)
+## 1. What is superposition? (the one big idea)
 
 Here's the single concept this entire project is built around. It's worth understanding before touching the code.
 
@@ -107,7 +89,7 @@ In this project we don't go all the way to SAEs — we just see superposition em
 
 ---
 
-## 3. Glossary — terms you'll see throughout
+## 2. Glossary — terms added in this step
 
 Skim these now; refer back as needed. Everything you'll meet in the rest of the README is defined here in one place.
 
@@ -134,7 +116,7 @@ Skim these now; refer back as needed. Everything you'll meet in the rest of the 
 - **Autoencoder** — a model that tries to reconstruct its own input after passing it through a smaller intermediate representation.
 - **Bottleneck** — the narrow middle layer in an autoencoder. The thing that forces the model to compress.
 - **Tied weights** — using the same matrix (transposed) for both encode and decode. Our model is tied; this halves the parameter count and is what the paper uses.
-- **ReLU** — `max(0, x)`. The nonlinearity at the end of our forward pass. Defined more fully in [section 5](#5-just-enough-pytorch-to-follow-along).
+- **ReLU** — `max(0, x)`. The nonlinearity at the end of our forward pass. Defined in step 0; in this project its job is to clip the cross-talk that allows superposition to work (see [The trick](#the-trick) above).
 - **Importance weight** — how much a feature contributes to the loss. We use a geometric decay (`0.7^i`) so feature 0 matters most.
 
 **Data / training concepts**
@@ -151,7 +133,7 @@ Skim these now; refer back as needed. Everything you'll meet in the rest of the 
 
 ---
 
-## 4. The experiment in plain English
+## 3. The experiment in plain English
 
 Here's the whole experiment, before any code.
 
@@ -183,92 +165,7 @@ The reveal. At `S = 0` (no sparsity), only the 2 most important features get rep
 
 ---
 
-## 5. Just enough PyTorch to follow along
-
-If you're comfortable with Python but new to PyTorch/ML, this is the bare minimum to read the notebook.
-
-### Tensors
-
-A tensor is PyTorch's name for a multi-dimensional array. Think NumPy array, but it lives on a GPU and tracks operations for automatic differentiation.
-
-```python
-x = torch.tensor([1.0, 2.0, 3.0])  # shape (3,)
-y = torch.rand(4, 5)               # shape (4, 5), random in [0,1)
-z = x @ y                          # not allowed here (shape mismatch), but @ is matmul
-```
-
-### `nn.Module` and `nn.Parameter`
-
-`nn.Module` is the base class for any neural net. You subclass it, register learnable parameters in `__init__`, and define what the forward pass does:
-
-```python
-class MyModel(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.W = nn.Parameter(torch.randn(3, 4))  # learnable
-
-    def forward(self, x):
-        return x @ self.W
-```
-
-`nn.Parameter` is just a tensor that says "I'm a weight, please give me gradients and let the optimiser update me." That's the whole magic.
-
-### ReLU: the world's simplest nonlinearity
-
-`ReLU(x) = max(0, x)`. Pass positive numbers through unchanged, replace negatives with zero. That's the entire function.
-
-```
-   ReLU(x)
-       ▲
-       │     ╱
-       │    ╱
-       │   ╱
-       │  ╱
-       │ ╱
-   ────┼──────────►  x
-       │
-       │   (negatives all flattened to 0)
-```
-
-Why it matters in general: without a nonlinearity, a stack of linear layers collapses into a single linear layer (a matmul of matmuls is still just a matmul). Inserting `ReLU` between layers is what lets a network learn non-linear functions. It's the most common activation function in modern neural nets because it's cheap, well-behaved, and works well in practice.
-
-Why it matters specifically in our toy model: ReLU is exactly what makes superposition possible. Recall the problem — when feature A is on, its direction in hidden space leaks a small amount into feature B's output slot. The model fights this leakage with two tools:
-
-1. A negative bias on the output (`self.b`) that pushes the leaked value below zero.
-2. ReLU at the end, which then clips anything below zero to zero.
-
-Together: small unwanted leakage gets erased. Real feature activations (positive, larger than the leakage) survive. Without ReLU, the model couldn't selectively filter cross-talk between features, and the whole setup would just be PCA — only `m` features ever represented.
-
-### The training loop
-
-Every PyTorch training loop has the same skeleton:
-
-```python
-for step in range(n_steps):
-    x      = get_a_batch()         # 1. get data
-    out    = model(x)              # 2. forward pass
-    loss   = loss_fn(out, target)  # 3. compute loss
-
-    optimizer.zero_grad()          # 4. clear old gradients
-    loss.backward()                # 5. compute gradients (backprop)
-    optimizer.step()               # 6. update weights
-```
-
-Backprop (`loss.backward()`) is the calculus that figures out, for every learnable parameter, "if I nudged this number up a tiny bit, would the loss go up or down?" The optimiser (Adam, in our case) uses that to take a step in the direction that decreases the loss.
-
-That's it. You don't need to understand the calculus to use it — `loss.backward()` is one line.
-
-### The optimiser
-
-`torch.optim.AdamW` is a popular default. Treat it as a recipe for "do gradient descent but smarter." It keeps a running estimate of the gradient direction and magnitude for each parameter, which makes training much more stable than plain gradient descent. For now: trust it.
-
-### One more thing: `device`
-
-If you have a GPU, you can move tensors and models to it: `x = x.to('cuda')`. On Colab with a GPU runtime, this gives you ~50x speedup. Our model is so small it would work on CPU too, but we use the GPU because it's free.
-
----
-
-## 6. Section-by-section walkthrough of the notebook
+## 4. Section-by-section walkthrough of the notebook
 
 The notebook is `toy_models_superposition.ipynb`. Each numbered section below maps to a section in the notebook.
 
@@ -331,7 +228,7 @@ Suggestions for follow-ups — staying in the toy model, or stepping up to real 
 
 ---
 
-## 7. What you should see when you run it
+## 5. What you should see when you run it
 
 Concrete expectations so you can tell whether things worked:
 
@@ -349,7 +246,7 @@ The exact geometry depends on random seeds. If you re-run with `torch.manual_see
 
 ---
 
-## 8. How to run it
+## 6. How to run it
 1. Go to [colab.research.google.com](https://colab.research.google.com).
 2. `File → Upload notebook` → upload `toy_models_superposition.ipynb`.
 3. `Runtime → Change runtime type → GPU` (T4 is fine and free).
@@ -361,7 +258,7 @@ If you'd rather run locally, you need Python 3.10+, `torch`, `numpy`, and `matpl
 
 ---
 
-## 9. Where to go next
+## 7. Where to go next
 
 Next in the curriculum: [`02-grokking-modular-addition/`](../02-grokking-modular-addition/) — meet your first transformer, and watch it learn an actual algorithm. The features you just learnt about (now in 128 dimensions, packed in superposition) will be lurking inside its embedding matrix.
 

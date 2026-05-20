@@ -63,16 +63,9 @@ The choice of `p` being prime matters — it makes the maths have nice Fourier s
 
 ---
 
-## 3. Glossary — terms you'll see throughout
+## 3. Glossary — terms added in this step
 
-Skim now; refer back as needed. Some of these were already in project 1 — the new transformer-specific ones are at the bottom.
-
-**From project 1, still relevant**
-
-- **Feature**: a hypothesised concept or property the model is internally tracking.
-- **Direction**: a non-zero vector in some activation space.
-- **Dimension**: one of the numbers in a vector. The hidden state of our transformer will be 128-dimensional.
-- **Superposition**: more features than dimensions. We won't focus on it here but it lurks in the background.
+Just the new ones. For earlier terms (feature, direction, dimension, superposition) see the step 1 glossary.
 
 **Grokking-specific**
 

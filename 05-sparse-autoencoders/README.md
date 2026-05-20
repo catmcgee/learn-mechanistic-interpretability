@@ -18,7 +18,7 @@ By the end you'll have:
 
 ## Table of contents
 
-1. [The big picture](#1-the-big-picture)
+1. [Why this step exists](#1-why-this-step-exists)
 2. [Glossary — terms added in this step](#2-glossary--terms-added-in-this-step)
 3. [What is a sparse autoencoder?](#3-what-is-a-sparse-autoencoder)
 4. [The experiment in plain English](#4-the-experiment-in-plain-english)
@@ -29,16 +29,9 @@ By the end you'll have:
 
 ---
 
-## 1. The big picture
+## 1. Why this step exists
 
-Recap of the whole curriculum so you can see how step 5 fits:
-
-- Step 0: weights are interpretable — you can just look.
-- Step 1: but with more features than neurons, the model represents features as non-orthogonal directions (superposition). Neurons stop being interpretable. Problem identified.
-- Step 2: real models learn algorithms (e.g. Fourier modular arithmetic) and store the features for those algorithms in superposition.
-- Step 3: in transformers, work is done by circuits of attention heads. We found one by hand (induction).
-- Step 4: we can verify circuits causally via activation patching. But this is still slow, manual, hypothesis-driven.
-- Step 5 (this one): can we automate it? Can we get the features out of a trained model with one big sweep, without knowing in advance what we're looking for? The current best answer is sparse autoencoders.
+Step 1 named the problem: real models pack features in superposition, so individual neurons stop being interpretable. Steps 2–4 worked around that — finding circuits by hand, verifying them by hand. This step automates the feature-finding part.
 
 The pitch for an SAE in one sentence: train a wider autoencoder on the model's hidden activations, with a sparsity penalty, and the directions it learns will be the model's actual features.
 

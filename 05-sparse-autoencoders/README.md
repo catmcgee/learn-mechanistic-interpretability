@@ -212,4 +212,4 @@ That's the toolkit. From here it's about scale, rigour, and applying it to quest
 - [MATS](https://www.matsprogram.org/) - competitive research fellowship, common pipeline from self-taught to professional interp researcher.
 - [ARENA](https://www.arena.education/) - structured curriculum with more advanced exercises if you want to go deeper than these projects.
 
-You're now ~6 months into mech interp by self-study, with a solid foundation. The next step is choosing one of the open problems from the top-level `README.md` and trying a small experiment of your own. That's how everyone in this field actually got started.
+You're now ~6 months into mech interp by self-study, with a solid foundation. The next step is choosing one of the open problems from the home page and trying a small experiment of your own. That's how everyone in this field actually got started.

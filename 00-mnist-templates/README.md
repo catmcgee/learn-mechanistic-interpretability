@@ -219,4 +219,4 @@ After that, each later project adds exactly one new big idea:
 - 04 - IOI circuit: activation patching - proving circuits are causally real
 - 05 - Sparse autoencoders: automatically finding features in any model
 
-See `../README.md` for the broader roadmap.
+See the home page for the broader roadmap.

@@ -91,7 +91,7 @@ In this project we don't go all the way to SAEs - we just see superposition emer
 
 ## 2. Glossary - terms added in this step
 
-Skim these now; refer back as needed. Everything you'll meet in the rest of the README is defined here in one place.
+Skim these now; refer back as needed. Everything you'll meet in the rest of this step is defined here in one place.
 
 **Geometry**
 

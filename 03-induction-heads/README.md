@@ -30,7 +30,7 @@ By the end you'll have:
 
 ## 1. What's new in this step
 
-Step 2 introduced the single-layer transformer. Almost everything in that project - attention, embeddings, residual stream, weight decay, training loop - is unchanged here. If any of those words feel rusty, re-skim that README first.
+Step 2 introduced the single-layer transformer. Almost everything in that project - attention, embeddings, residual stream, weight decay, training loop - is unchanged here. If any of those words feel rusty, re-skim step 2 first.
 
 The only thing actually new in this project:
 
@@ -44,7 +44,7 @@ Everything else (`nn.Module`, attention maths, training loops, etc.) - you alrea
 
 ## 2. Glossary - terms added in this step
 
-Just the new ones. For terms from earlier steps see those READMEs.
+Just the new ones. For terms from earlier steps see those step pages.
 
 - **Attention pattern**: the matrix of attention weights for one head, after softmax. Shape `(query_position, key_position)`. Entry `[i, j]` is "how much does the token at position `i` look at the token at position `j`?" Visualising this matrix as a heatmap is the basic interpretability move on a transformer.
 - **Previous-token head**: an attention head whose attention pattern is a clean sub-diagonal - every position attends to the position immediately before it. The job is "tell me what was just said." Found in Layer 0 of our trained model.

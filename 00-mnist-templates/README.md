@@ -12,6 +12,29 @@ Specifically:
 - We'll look at the model's weight matrix and see that each row is a fuzzy template of a digit.
 - We'll then train a slightly bigger model (1 hidden layer) and look at its weights - they'll be messier and harder to interpret, which is a teaser for project 1 (superposition).
 
+> **Suggested diagram - the whole picture: input, model, output, training loop**
+>
+> Why generate this: this is the first ML pipeline most readers will ever see. Showing forward pass + training loop in one image makes "what's actually happening when we train" concrete in a way no sequence of bullets can.
+>
+> Prompt for ChatGPT image generation:
+>
+> > A two-row technical diagram on a white background, sans-serif labels.
+> >
+> > TOP ROW (forward pass, left to right):
+> > 1. A small 28×28 grid showing a fuzzy hand-drawn "3", labelled "INPUT: MNIST image (28×28)".
+> > 2. Arrow labelled "flatten" pointing right to a tall thin vertical column of 784 small squares, labelled "x: input vector (784 numbers)".
+> > 3. Arrow into a wide rectangular box labelled "MODEL: one linear layer". Inside the box, two smaller annotations: "W (10×784) - one row per digit class" and "b (10) - one bias per class".
+> > 4. Arrow into 10 stacked horizontal bars on the right, each labelled with a digit 0-9, the bar for "3" tallest and highlighted in colour. Labelled "OUTPUT: 10 class scores".
+> > 5. Final small arrow labelled "argmax" into a tiny box: "predicted: 3".
+> >
+> > BOTTOM ROW (training loop), drawn beneath the model box as a feedback loop:
+> > • Arrow going down from the 10 class scores into an oval labelled "loss (how wrong was the prediction vs the true label?)".
+> > • Arrow labelled "backprop → gradient" going left from "loss" into a rectangle labelled "Adam optimiser".
+> > • Arrow labelled "nudge W and b downhill" curling up from "Adam optimiser" back into the model box.
+> > • Small annotation below the loop: "repeat ~5,800 times: 5 epochs × ~1,170 mini-batches of 256 examples".
+> >
+> > Caption underneath: "Training = forward pass, measure wrongness, nudge weights to be less wrong. Repeat thousands of times until the weights settle into digit templates."
+
 That single move - train, look, find something - is what every subsequent step in this series elaborates on.
 
 By the end you'll have:
@@ -72,7 +95,7 @@ If you're brand new to ML, some of these might be your first time seeing the wor
 - **Backpropagation**: the calculus trick that computes the gradient efficiently. In code it's literally one line: `loss.backward()`.
 - **Optimiser**: the bit that actually applies the gradient-descent step. We'll use Adam, a sensible default. In code you'll see it spelled `optimizer` because PyTorch uses American spelling.
 - **Training loop**: the cycle of (1) forward pass: model makes predictions, (2) compute loss, (3) compute gradients via backpropagation, (4) optimiser updates the weights. Repeat thousands of times.
-- **MNIST**: a dataset of 70,000 28×28 greyscale images of handwritten digits, each labelled 0-9. Old, small, perfect for tutorials.
+- **MNIST**: short for *Modified National Institute of Standards and Technology* - a dataset of 70,000 28×28 greyscale images of handwritten digits, each labelled 0-9. Old, small, perfect for tutorials.
 - **Template matching**: an algorithm that compares the input to a stored prototype and outputs how similar it is. As you'll see, that's essentially what logistic regression on MNIST does.
 
 ---
@@ -90,13 +113,6 @@ Train the simplest possible model on MNIST:
 - Output: the model picks the class whose score is highest.
 - Training: 5 epochs of Adam with mini-batches of 256 (~1,170 steps/epoch). Gets to ~92% test accuracy. Far from state-of-the-art, fine for our purposes.
 
-> **Suggested diagram - logistic regression as one linear layer**
->
-> Why generate this: the whole model is one matrix multiply plus a bias. A picture of "28×28 image flattens to a 784-vector, multiply by W of shape (10, 784), add bias, get 10 class scores" makes that concrete in a way the equation doesn't.
->
-> Prompt for ChatGPT image generation:
->
-> > A clean horizontal pipeline diagram. LEFT: a small 28×28 grid showing a fuzzy "3" digit, labelled "input image (28×28)". An arrow labelled "flatten" points to a tall vertical column of 784 small squares, labelled "x ∈ ℝ⁷⁸⁴ (input vector)". MIDDLE: a rectangular box labelled "linear layer: x @ W.T + b" with annotations underneath: "W shape (10, 784)" and "b shape (10,)". RIGHT: 10 horizontal rows stacked vertically, each labelled with a digit 0 through 9 on the left and a small horizontal bar showing the class score; the row for digit "3" has the longest bar and is highlighted. Caption underneath: "Logistic regression on MNIST: one matrix multiply, one bias, 10 class scores." Clean technical diagram, white background, sans-serif labels, no decoration.
 
 ![Three-step pipeline: weight matrix W of shape (10, 784) with row 3 highlighted; an arrow labelled "reshape (28×28)"; the reshaped row 3 rendered as a 28×28 image showing a fuzzy red template of the digit 3. Caption: each row of W is a digit template; reshaping makes it readable.](diagrams/weight-reshape-pipeline.png)
 

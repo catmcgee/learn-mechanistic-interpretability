@@ -135,41 +135,25 @@ You did project 1, so you already know `nn.Module`, `nn.Parameter`, the training
 
 A transformer is just a particular arrangement of standard neural-net pieces (linear layers, ReLU, softmax). Here's the entire architecture in one diagram, conceptually:
 
-```
-tokens (a, b, =)
-        │
-        ▼
-   ┌──────────┐
-   │ embedding│  W_E: lookup table that turns each token into a 128-dim vector
-   └──────────┘  + positional embedding W_pos (per-position offset)
-        │
-        ▼
-  [residual stream - a (3, 128) tensor: 3 positions × 128 features each]
-        │
-        ▼
-   ┌──────────┐
-   │ attention│  4 heads. Each head can move information between positions.
-   └──────────┘  Writes its output back into the residual stream.
-        │
-        ▼
-  [residual stream, updated]
-        │
-        ▼
-   ┌──────────┐
-   │   MLP    │  linear(128 → 512) → ReLU → linear(512 → 128)
-   └──────────┘  Per-position computation.
-        │
-        ▼
-  [residual stream, updated again]
-        │
-        ▼
-   ┌──────────┐
-   │unembedding│ W_U: linear(128 → 114). Produces a score for each possible answer.
-   └──────────┘
-        │
-        ▼
-   logits  →  softmax  →  predicted answer at the `=` position
-```
+> **Suggested diagram - the transformer, top to bottom**
+>
+> Why generate this: the ASCII version of this is fiddly to read and breaks on small screens. A clean image makes "data flows down through a stack of layers, each layer reads and writes the residual stream" obvious.
+>
+> Prompt for ChatGPT image generation:
+>
+> > A clean vertical flow diagram on a white background, read top to bottom. Sans-serif labels. Use rounded rectangles for layers and rectangles with dashed borders for the residual stream tensor between layers. Single straight arrows pointing down between every block.
+> >
+> > 1. At the top: a small horizontal row of three coloured token squares labelled "a", "b", "=". Caption above: "input tokens".
+> > 2. Arrow down to a rounded rectangle labelled "embedding". To the right of the box, a small caption: "W_E: lookup table, each token → 128-dim vector. Plus W_pos: per-position offset."
+> > 3. Arrow down to a dashed-border rectangle labelled "residual stream — shape (3, 128): 3 positions × 128 features each". This is the central object; draw it slightly wider than the layer boxes.
+> > 4. Arrow down to a rounded rectangle labelled "attention". Caption to the right: "4 heads. Moves information between positions. Writes output back into the residual stream."
+> > 5. Arrow down to another dashed-border rectangle labelled "residual stream (updated)".
+> > 6. Arrow down to a rounded rectangle labelled "MLP". Caption to the right: "linear(128 → 512) → ReLU → linear(512 → 128). Per-position computation."
+> > 7. Arrow down to another dashed-border rectangle labelled "residual stream (updated again)".
+> > 8. Arrow down to a rounded rectangle labelled "unembedding". Caption to the right: "W_U: linear(128 → 114). One score per possible answer."
+> > 9. Arrow down to a small final block labelled "logits → softmax → predicted answer (read off at the `=` position)".
+> >
+> > Visual hint: colour the three dashed "residual stream" rectangles the same pale colour to emphasise that they are the same object passing through, just with more information added at each step.
 
 Three concepts you need to internalise:
 

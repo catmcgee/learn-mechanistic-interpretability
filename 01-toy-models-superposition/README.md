@@ -74,19 +74,7 @@ The model represents each feature as a direction in hidden space. The directions
 
 (You'll actually see what these directions look like in the notebook - the headline experiment plots each feature's direction as an arrow in the 2D hidden plane.)
 
-> **Suggested diagram - features as overlapping directions**
->
-> Why generate this: the whole project hinges on the picture of features as arrows in a 2D plane, with some arrows almost-but-not-quite orthogonal. A single image makes "leakage" obvious in a way prose can't.
->
-> Prompt for ChatGPT image generation:
->
-> > A clean 2D coordinate plane on white background, square aspect ratio, light grid lines, origin labelled, sans-serif labels.
-> >
-> > Draw 5 arrows from the origin, evenly spaced around the circle at 72° apart (so they form a regular pentagon when their tips are connected). Each arrow is a different colour and labelled "feature 1" through "feature 5".
-> >
-> > Pick one arrow ("feature 1") and draw it slightly thicker / bolder to indicate it's the active feature. Onto the tip of another nearby arrow ("feature 2"), drop a small dashed perpendicular projection from "feature 1" - this is the "leakage" of feature 1 onto feature 2's direction. Label that little dashed segment "leakage".
-> >
-> > Big caption underneath: "5 features, only 2 dimensions to fit them in. The arrows can't all be 90° apart - so when one feature fires, it leaks a little onto the others."
+![Five colour-coded arrows from the origin on a 2D coordinate plane, roughly evenly spaced around the circle: feature 1 (blue, bolder) pointing up and to the right, feature 2 (red) down and to the right, feature 3 (green) up and to the left, feature 4 (orange) down and to the left, feature 5 (purple) straight down. A dashed perpendicular line drops from the tip of feature 1's arrow onto feature 2's direction, labelled "leakage", with a small right-angle marker at the foot. Caption: 5 features, only 2 dimensions to fit them in. The arrows can't all be 90° apart - so when one feature fires, it leaks a little onto the others.](diagrams/features-leakage.png)
 
 This sounds catastrophic, but two things save the model:
 

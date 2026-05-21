@@ -2,6 +2,8 @@
 
 Welcome to the very beginning. This is the first project in a 6-step series that teaches mechanistic interpretability from "nothing" to "you can read research papers." If you've never trained a neural network in your life, start here.
 
+Each step is structured as a *notebook*: a written walkthrough up top, then runnable Python code cells further down. You read, you run, you read more.
+
 The goal of this project is to do the single most foundational move in interpretability: train a tiny model, then look directly at its weights and see that they mean something a human can recognise.
 
 Specifically:
@@ -49,6 +51,7 @@ If that move feels too obvious or too easy - good. The point is that all of mech
 
 If you're brand new to ML, some of these might be your first time seeing the word. Skim now, refer back as needed.
 
+- **Notebook**: an interactive document where prose and runnable Python code cells are interleaved. Each step of this curriculum is rendered as a notebook - the page you're reading right now is one. Code cells have a Run button; everything else is just text.
 - **Neural network**: a function from input vectors to output vectors, defined by a collection of learnable numbers (the weights). The function is built by stacking small operations (linear maps, nonlinearities) on top of each other.
 - **Weights**: the numbers inside the model. The thing training adjusts. Before training they're random; after training they're carefully tuned for the task. Everything we care about in interpretability lives in the weights.
 - **Logistic regression**: the simplest kind of neural network. Literally one matrix multiply followed by a softmax. No hidden layer. The whole model is a single weight matrix `W` and a bias vector `b`.

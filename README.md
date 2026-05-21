@@ -50,7 +50,7 @@ A few examples of what mech interp has discovered:
 
 Mech interp is the deepest of the interpretability schools - it has its own toolkit and its own mental model, neither of which you can pick up just by knowing regular ML. That's why a dedicated curriculum exists. This one.
 
-Why mech-interp-only here: it's the school most aligned with Neel Nanda's work and Anthropic's interp output. The other schools are mostly applications of techniques you'd already know from regular ML; mech interp needs a dedicated path to build the necessary primitives. Once you have the foundations from this curriculum, the other schools are quick to pick up.
+Why mech-interp-only here: it's the school most aligned with Anthropic's interp output and the broader mech-interp community. The other schools are mostly applications of techniques you'd already know from regular ML; mech interp needs a dedicated path to build the necessary primitives. Once you have the foundations from this curriculum, the other schools are quick to pick up.
 
 Things you'll bump into anyway, even staying mech-interp-only:
 

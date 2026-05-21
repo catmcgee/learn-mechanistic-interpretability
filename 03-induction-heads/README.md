@@ -215,7 +215,7 @@ You've found your first circuit. Next:
 
 - Step 4 (IOI in GPT-2 small) will introduce activation patching - the tool for causally verifying that a circuit you found is actually responsible for the behaviour. Right now we've found heads with the right attention pattern; that's not the same as proving they're causally necessary. Step 4 makes the difference rigorous.
 
-- TransformerLens: Neel Nanda's library, which makes attention-pattern inspection and head ablations one-liners on any HuggingFace model. We hand-rolled here for clarity; step 4 will switch to TransformerLens for the next stage of scale.
+- TransformerLens: a library that makes attention-pattern inspection and head ablations one-liners on any HuggingFace model. We hand-rolled here for clarity; step 4 will switch to TransformerLens for the next stage of scale.
 
 ### Further reading
 

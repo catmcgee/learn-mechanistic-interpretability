@@ -6,7 +6,7 @@ By the end you'll have:
 
 - Trained a tiny neural network from scratch in PyTorch.
 - Watched it learn to do something genuinely surprising: represent 5 features in only 2 dimensions by packing them into a pentagon.
-- Built intuition for "superposition", the central obstacle that modern interpretability research (sparse autoencoders, Anthropic's circuits work, Neel Nanda's tutorials) is trying to solve.
+- Built intuition for "superposition", the central obstacle that modern interpretability research (sparse autoencoders, Anthropic's circuits work) is trying to solve.
 
 ---
 
@@ -38,6 +38,8 @@ In mech interp, a feature is a hypothesised concept or property that a model has
 - "this character follows an open quote mark"
 - "this is a year between 1900 and 2000"
 - "the next token will be capitalised"
+
+Those examples are deliberately concrete to give you something to hold on to. Real features can be much more abstract: "the tone of this sentence is sarcastic", "this code path will throw an exception", "this passage is hedging", or directions in activation space that don't correspond to any clean English description at all - they only show up because something about the input reliably activates them. When SAEs (step 5) find features in real LLMs, the majority are these stranger, harder-to-name ones.
 
 Two important properties:
 
@@ -224,7 +226,7 @@ We then train ~25 models across a fine grid of sparsity values and plot `D_i` ag
 
 ### Section 9: Where to go next
 
-Suggestions for follow-ups - staying in the toy model, or stepping up to real transformers via Neel Nanda's TransformerLens.
+Suggestions for follow-ups - staying in the toy model, or stepping up to real transformers via TransformerLens.
 
 ---
 

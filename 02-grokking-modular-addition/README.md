@@ -1,4 +1,4 @@
-# Grokking modular addition - replicating Neel Nanda's signature paper
+# Grokking modular addition
 
 This is project 2 in our mech interp series. We replicate the core finding of [Progress Measures for Grokking via Mechanistic Interpretability](https://arxiv.org/abs/2301.05217) (Nanda, Chan, Lieberum, Smith, Steinhardt - 2023), one of the most striking results in mech interp.
 
@@ -38,7 +38,7 @@ Grokking is what happens when those two curves come apart in a really weird way:
 
 This was first reported by [Power et al. 2022](https://arxiv.org/abs/2201.02177) ("Grokking: Generalisation Beyond Overfitting on Small Algorithmic Datasets") at OpenAI. They observed it but had no mechanistic explanation.
 
-Neel Nanda's 2023 paper took the same setup, fully reverse-engineered the trained model, and showed exactly what was happening: during the "boring" plateau, the model was slowly building up a generalising circuit alongside the memorised solution. When the circuit got good enough, it took over.
+Nanda et al.'s 2023 paper took the same setup, fully reverse-engineered the trained model, and showed exactly what was happening: during the "boring" plateau, the model was slowly building up a generalising circuit alongside the memorised solution. When the circuit got good enough, it took over.
 
 That circuit is what makes this whole thing beautiful - it's a clean, human-understandable algorithm based on Fourier series. We'll find it.
 

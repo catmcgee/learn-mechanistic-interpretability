@@ -244,7 +244,7 @@ You've just done the most foundational move in mech interp. You're ready for pro
 
 The natural question raised by Section 6 is: why are the MLP's hidden-neuron weights so messy? Why doesn't each hidden neuron correspond to one clean feature like the logistic-regression templates do?
 
-The answer is superposition, and project 1 (`../01-toy-models-superposition/`) is dedicated to it. In a tiny toy model with no MNIST or images at all, you'll watch the same messiness emerge and understand exactly why it happens.
+The answer is superposition, and [project 1](../01-toy-models-superposition/) is dedicated to it. In a tiny toy model with no MNIST or images at all, you'll watch the same messiness emerge and understand exactly why it happens.
 
 After that, each later project adds exactly one new big idea:
 

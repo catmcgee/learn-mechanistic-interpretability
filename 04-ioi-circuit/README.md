@@ -34,7 +34,7 @@ By the end you'll have:
 ## 1. What's new in this step
 
 - Pre-trained models. Steps 0-3 trained models from scratch. From now on, we use ones other people trained. The shift in mindset is "I don't get to choose the data, the architecture, or the seed; I just have weights and I have to figure out what they're doing."
-- TransformerLens. Neel Nanda's library wraps any HuggingFace transformer and gives you clean access to every internal tensor. One-line model loading, one-line attention pattern access, one-line hooks for patching activations.
+- TransformerLens. A library that wraps any HuggingFace transformer and gives you clean access to every internal tensor. One-line model loading, one-line attention pattern access, one-line hooks for patching activations.
 - Activation patching. A controlled experiment on the model's internals: swap a specific activation with one from a different prompt and measure whether the prediction changes. This converts circuit-finding from "the pattern looks suggestive" to "without this component the model fails in a predictable way."
 - Logit difference. The standard IOI metric: how much does the model prefer the right answer over the wrong one, in raw logits? `logit(correct) - logit(distractor)`. We track this throughout.
 

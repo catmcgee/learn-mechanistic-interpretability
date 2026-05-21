@@ -8,7 +8,7 @@ The goal of this project is to do the single most foundational move in interpret
 
 Specifically:
 
-- We'll train logistic regression on MNIST (handwritten digit recognition).
+- We'll train logistic regression on MNIST (a famous dataset of 70,000 hand-drawn digits, used by everyone learning ML).
 - We'll look at the model's weight matrix and see that each row is a fuzzy template of a digit.
 - We'll then train a slightly bigger model (1 hidden layer) and look at its weights - they'll be messier and harder to interpret, which is a teaser for project 1 (superposition).
 
@@ -52,7 +52,11 @@ If that move feels too obvious or too easy - good. The point is that all of mech
 If you're brand new to ML, some of these might be your first time seeing the word. Skim now, refer back as needed.
 
 - **Notebook**: an interactive document where prose and runnable Python code cells are interleaved. Each step of this curriculum is rendered as a notebook - the page you're reading right now is one. Code cells have a Run button; everything else is just text.
-- **Neural network**: a function from input vectors to output vectors, defined by a collection of learnable numbers (the weights). The function is built by stacking small operations (linear maps, nonlinearities) on top of each other.
+- **Vector**: an ordered list of numbers. A 28×28 MNIST image becomes a vector of 784 numbers (one per pixel, read row by row). Both the input and the output of a neural network are vectors.
+- **Layer**: a chunk of the network that takes a vector in and outputs a different (usually different-sized) vector. Stacking layers is how you build deeper models.
+- **Linear layer**: the simplest possible layer - just one matrix multiplication plus a bias: `out = x @ W.T + b`. No nonlinearity. Logistic regression is a single linear layer; an MLP is two or more linear layers with a nonlinearity (like ReLU) between them.
+- **Bias**: a small per-output offset added after the matrix multiply. Lets the layer shift its outputs up or down independently of the input.
+- **Neural network**: a function from input vectors to output vectors, defined by a collection of learnable numbers (the weights). The function is built by stacking layers (linear maps, nonlinearities) on top of each other.
 - **Weights**: the numbers inside the model. The thing training adjusts. Before training they're random; after training they're carefully tuned for the task. Everything we care about in interpretability lives in the weights.
 - **Logistic regression**: the simplest kind of neural network. Literally one matrix multiply followed by a softmax. No hidden layer. The whole model is a single weight matrix `W` and a bias vector `b`.
 - **MLP (multilayer perceptron)**: logistic regression with one or more "hidden layers" stacked in between input and output, each followed by a nonlinearity. The first non-trivial neural network.
@@ -86,6 +90,14 @@ Train the simplest possible model on MNIST:
 - Output: the model picks the class whose score is highest.
 - Training: 5 epochs of Adam with mini-batches of 256 (~1,170 steps/epoch). Gets to ~92% test accuracy. Far from state-of-the-art, fine for our purposes.
 
+> **Suggested diagram - logistic regression as one linear layer**
+>
+> Why generate this: the whole model is one matrix multiply plus a bias. A picture of "28×28 image flattens to a 784-vector, multiply by W of shape (10, 784), add bias, get 10 class scores" makes that concrete in a way the equation doesn't.
+>
+> Prompt for ChatGPT image generation:
+>
+> > A clean horizontal pipeline diagram. LEFT: a small 28×28 grid showing a fuzzy "3" digit, labelled "input image (28×28)". An arrow labelled "flatten" points to a tall vertical column of 784 small squares, labelled "x ∈ ℝ⁷⁸⁴ (input vector)". MIDDLE: a rectangular box labelled "linear layer: x @ W.T + b" with annotations underneath: "W shape (10, 784)" and "b shape (10,)". RIGHT: 10 horizontal rows stacked vertically, each labelled with a digit 0 through 9 on the left and a small horizontal bar showing the class score; the row for digit "3" has the longest bar and is highlighted. Caption underneath: "Logistic regression on MNIST: one matrix multiply, one bias, 10 class scores." Clean technical diagram, white background, sans-serif labels, no decoration.
+
 ![Three-step pipeline: weight matrix W of shape (10, 784) with row 3 highlighted; an arrow labelled "reshape (28×28)"; the reshaped row 3 rendered as a 28×28 image showing a fuzzy red template of the digit 3. Caption: each row of W is a digit template; reshaping makes it readable.](diagrams/weight-reshape-pipeline.png)
 
 After training, take the weight matrix `W` of shape `(10, 784)`. Each row is a 784-dim vector - one per digit class. Reshape each row to 28×28 and plot it as a heatmap.
@@ -96,7 +108,7 @@ That's the entire algorithm. Logistic regression on MNIST is template matching. 
 
 ### Experiment B: a tiny MLP, and the first hint of messiness
 
-Now train a slightly bigger model: a 1-hidden-layer MLP with 32 hidden neurons. The first-layer weights are now a matrix of shape `(32, 784)` - 32 hidden neurons, each with a 784-dim "input filter".
+Now train a slightly bigger model: a 1-hidden-layer MLP (multilayer perceptron) with 32 hidden neurons. The first-layer weights are now a matrix of shape `(32, 784)` - 32 hidden neurons, each with a 784-dim "input filter".
 
 Plot all 32 filters as 28×28 heatmaps. What you'll see: some look like edges and strokes (cleaner features than the templates), but many look messy - like blends of two or three digits, or patterns that don't have an obvious meaning. Some are barely active. Some are clearly multi-purpose.
 
@@ -176,7 +188,7 @@ A `LogReg` module with one `nn.Linear(784, 10)`. Train 5 epochs of Adam (mini-ba
 Reshape each row of `W` to 28×28 and plot. Each plot has the corresponding digit label. The wow moment.
 
 ### Section 5: A 1-hidden-layer MLP
-Same training loop but with one hidden layer of 32 ReLU units in between. Roughly the same accuracy or slightly better.
+Same training loop but with one hidden layer of 32 ReLU (rectified linear unit) neurons in between. Roughly the same accuracy or slightly better.
 
 ### Section 6: Visualise the first-layer weights
 Reshape each of the 32 hidden neurons' input weights to 28×28 and plot in a grid. Compare to the clean templates from Section 4. The pivot to project 1.

@@ -12,28 +12,23 @@ Specifically:
 - We'll look at the model's weight matrix and see that each row is a fuzzy template of a digit.
 - We'll then train a slightly bigger model (1 hidden layer) and look at its weights - they'll be messier and harder to interpret, which is a teaser for project 1 (superposition).
 
-> **Suggested diagram - the whole picture: input, model, output, training loop**
+> **Suggested diagram - input → vector → layers → output**
 >
-> Why generate this: this is the first ML pipeline most readers will ever see. Showing forward pass + training loop in one image makes "what's actually happening when we train" concrete in a way no sequence of bullets can.
+> Why generate this: this is the first ML pipeline most readers will ever see. A clean picture of "image becomes a list of numbers, passes through a layer, comes out as class scores" makes the four building blocks click without any equation.
 >
 > Prompt for ChatGPT image generation:
 >
-> > A two-row technical diagram on a white background, sans-serif labels.
+> > A minimal four-step diagram on a white background, read left to right, sans-serif labels, no decoration. The four steps are evenly spaced with simple arrows between them.
 > >
-> > TOP ROW (forward pass, left to right):
-> > 1. A small 28×28 grid showing a fuzzy hand-drawn "3", labelled "INPUT: MNIST image (28×28)".
-> > 2. Arrow labelled "flatten" pointing right to a tall thin vertical column of 784 small squares, labelled "x: input vector (784 numbers)".
-> > 3. Arrow into a wide rectangular box labelled "MODEL: one linear layer". Inside the box, two smaller annotations: "W (10×784) - one row per digit class" and "b (10) - one bias per class".
-> > 4. Arrow into 10 stacked horizontal bars on the right, each labelled with a digit 0-9, the bar for "3" tallest and highlighted in colour. Labelled "OUTPUT: 10 class scores".
-> > 5. Final small arrow labelled "argmax" into a tiny box: "predicted: 3".
+> > 1. INPUT. A small handwritten "3" drawn on a 28×28 pixel grid. Label underneath: "input: a 28×28 image".
+> > 2. Arrow labelled "flatten" pointing right.
+> > 3. VECTOR. A tall thin vertical column of small squares (about 12 squares visible plus a vertical ellipsis "…" indicating more). Label underneath: "vector: an ordered list of numbers (here: 784 of them)".
+> > 4. Arrow pointing right.
+> > 5. LAYERS. Draw two horizontal rectangles literally stacked like pancakes to suggest the word "layer". The bottom rectangle is solid and labelled inside it "linear layer". The upper rectangle is drawn with a dashed outline and labelled "(optionally more layers)". Label underneath the whole stack: "layers: the model's machinery - each layer turns one vector into another".
+> > 6. Arrow pointing right.
+> > 7. OUTPUT. 10 short horizontal bars stacked vertically, each labelled with a digit 0-9 on the left. The bar for "3" is the tallest and filled in colour; the others are short and grey. Label underneath: "output: 10 scores, one per digit - the biggest wins".
 > >
-> > BOTTOM ROW (training loop), drawn beneath the model box as a feedback loop:
-> > • Arrow going down from the 10 class scores into an oval labelled "loss (how wrong was the prediction vs the true label?)".
-> > • Arrow labelled "backprop → gradient" going left from "loss" into a rectangle labelled "Adam optimiser".
-> > • Arrow labelled "nudge W and b downhill" curling up from "Adam optimiser" back into the model box.
-> > • Small annotation below the loop: "repeat ~5,800 times: 5 epochs × ~1,170 mini-batches of 256 examples".
-> >
-> > Caption underneath: "Training = forward pass, measure wrongness, nudge weights to be less wrong. Repeat thousands of times until the weights settle into digit templates."
+> > Big caption underneath the whole row: "input → vector → layers → output. That's the shape of any neural network."
 
 That single move - train, look, find something - is what every subsequent step in this series elaborates on.
 
@@ -114,9 +109,11 @@ Train the simplest possible model on MNIST:
 - Training: 5 epochs of Adam with mini-batches of 256 (~1,170 steps/epoch). Gets to ~92% test accuracy. Far from state-of-the-art, fine for our purposes.
 
 
-![Three-step pipeline: weight matrix W of shape (10, 784) with row 3 highlighted; an arrow labelled "reshape (28×28)"; the reshaped row 3 rendered as a 28×28 image showing a fuzzy red template of the digit 3. Caption: each row of W is a digit template; reshaping makes it readable.](diagrams/weight-reshape-pipeline.png)
-
 After training, take the weight matrix `W` of shape `(10, 784)`. Each row is a 784-dim vector - one per digit class. Reshape each row to 28×28 and plot it as a heatmap.
+
+The picture below shows the trick in three stages: grab one row of `W` (it's just a long list of 784 numbers), reshape it into a 28×28 grid, then look at it. The "3" row, reshaped, looks like a fuzzy 3.
+
+![Three stages of reading a weight row: weight matrix W of shape (10, 784) with row 3 highlighted; an arrow labelled "reshape (28×28)"; the reshaped row 3 rendered as a 28×28 image showing a fuzzy red template of the digit 3. Caption: each row of W is a digit template; reshaping makes it readable.](diagrams/weight-reshape-pipeline.png)
 
 What you'll see: 10 images, each looking like a fuzzy digit. The row for class "0" looks like a hollow circular blob. The row for class "1" looks like a vertical stripe. And so on. These are the templates the model has learnt: it predicts the class whose template most resembles the input.
 

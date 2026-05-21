@@ -39,7 +39,7 @@ In mech interp, a feature is a hypothesised concept or property that a model has
 - "this is a year between 1900 and 2000"
 - "the next token will be capitalised"
 
-Those examples are deliberately concrete to give you something to hold on to. Real features can be much more abstract: "the tone of this sentence is sarcastic", "this code path will throw an exception", "this passage is hedging", or directions in activation space that don't correspond to any clean English description at all - they only show up because something about the input reliably activates them. When SAEs (step 5) find features in real LLMs, the majority are these stranger, harder-to-name ones.
+Those examples are deliberately concrete to give you something to hold on to. Real features can be much more abstract: "the tone of this sentence is sarcastic", "this code path will throw an exception", "this passage is hedging", or directions in activation space that don't correspond to any clean English description at all - they only show up because something about the input reliably activates them. When sparse autoencoders (SAEs - covered in step 5) find features in real LLMs, the majority are these stranger, harder-to-name ones.
 
 Two important properties:
 
@@ -55,6 +55,20 @@ Two pieces of geometry vocabulary you need before going further:
 - **Dimension**: one of the numbers in a vector. A point in 2D is two numbers like `(3, -1.5)`. 3D is three numbers `(x, y, z)`. 100D is 100 numbers - impossible to picture, but the maths works exactly the same.
 - **Hidden space**: the set of possible values inside the model's bottleneck layer. Our model has 2 hidden neurons, so any "hidden state" is just a pair of numbers - a single point you can literally draw on a page. That's exactly why we chose `m=2` for this experiment: 2D is plottable.
 - **Direction**: any non-zero vector, pointing from the origin out into the space. Two vectors are orthogonal (perpendicular) if they form a 90° angle - like the x-axis and y-axis. Most pairs of random directions are not orthogonal; they overlap somewhat.
+
+> **Suggested diagrams - three views of the same 2D plane**
+>
+> Why generate these: dimension, hidden space, and direction are all just different ways of looking at the same coordinate plane. Three images that share the same base diagram make the relationship between the three concepts obvious.
+>
+> Base diagram (shared by all three): a clean 2D coordinate plane, square aspect ratio, white background, sans-serif labels. Horizontal x-axis and vertical y-axis, light grid lines, range about -3 to 3 on each axis, with the origin labelled.
+>
+> Generate the three variants below as separate images. Each one starts from the base and adds exactly one overlay.
+>
+> Variant 1 - "Dimension". On the base plane, add a single labelled dot at the point `(3, -1.5)`. Draw a dashed line from the dot down to the x-axis (meeting it at 3) and a dashed line across to the y-axis (meeting it at -1.5). Caption underneath: "A point is just a list of numbers. This one needs 2 numbers - that's why we call it 2D."
+>
+> Variant 2 - "Hidden space". On the base plane, shade the whole plane a very pale colour to suggest "all possible values", and scatter ~10 small dots at varied positions across it. Caption underneath: "The whole plane is the model's hidden space - every possible 2-number hidden state lives somewhere on it. With 2 hidden neurons, that's all the room the model has."
+>
+> Variant 3 - "Direction". On the base plane, draw two arrows from the origin out into the plane: one along the positive x-axis (pointing right) and one at roughly 30° above horizontal (pointing up-and-right). Mark the angle between them. Add a faint dashed third arrow along the positive y-axis. Caption underneath: "A direction is any arrow from the origin. Two directions are orthogonal if they meet at 90° - like the x and y axes."
 
 Real language models have hidden spaces of dimension 768, 4096, or even 12,288. You can't draw those, but each feature still gets a direction in that high-D space. Exactly the same idea as our 2D toy - just not visualisable.
 
@@ -72,10 +86,24 @@ The model represents each feature as a direction in hidden space. The directions
 
 (You'll actually see what these directions look like in the notebook - the headline experiment plots each feature's direction as an arrow in the 2D hidden plane.)
 
+> **Suggested diagram - features as overlapping directions**
+>
+> Why generate this: the whole project hinges on the picture of features as arrows in a 2D plane, with some arrows almost-but-not-quite orthogonal. A single image makes "leakage" obvious in a way prose can't.
+>
+> Prompt for ChatGPT image generation:
+>
+> > A clean 2D coordinate plane on white background, square aspect ratio, light grid lines, origin labelled, sans-serif labels.
+> >
+> > Draw 5 arrows from the origin, evenly spaced around the circle at 72° apart (so they form a regular pentagon when their tips are connected). Each arrow is a different colour and labelled "feature 1" through "feature 5".
+> >
+> > Pick one arrow ("feature 1") and draw it slightly thicker / bolder to indicate it's the active feature. Onto the tip of another nearby arrow ("feature 2"), drop a small dashed perpendicular projection from "feature 1" - this is the "leakage" of feature 1 onto feature 2's direction. Label that little dashed segment "leakage".
+> >
+> > Big caption underneath: "5 features, only 2 dimensions to fit them in. The arrows can't all be 90° apart - so when one feature fires, it leaks a little onto the others."
+
 This sounds catastrophic, but two things save the model:
 
 1. Features are sparse. In real data, most features are zero most of the time. The word you're reading right now is not in a Python comment, not in Japanese, not about the Golden Gate Bridge, not a date, etc. - almost all features are off. So two features rarely fire together, and interference is rare.
-2. ReLU clips the leakage. When feature A leaks a small positive value into feature B's output, the ReLU (or really any nonlinearity) can clip it down to zero. The model learns to use this.
+2. **ReLU** clips the leakage. ReLU stands for "rectified linear unit", and it's the simplest possible nonlinearity: `ReLU(x) = max(0, x)`. Positive numbers pass through unchanged; negative numbers become 0. When feature A leaks a small positive or negative value into feature B's output, ReLU can clip the negative half of that leakage to zero - so half the time, the interference simply disappears. The model learns to arrange the leakage so it tends to fall on the negative side, where ReLU will erase it.
 
 The result: a network can pack `n >> m` features into `m` neurons, as long as features are sparse enough. This is superposition.
 
@@ -234,7 +262,7 @@ Suggestions for follow-ups - staying in the toy model, or stepping up to real tr
 
 Concrete expectations so you can tell whether things worked:
 
-1. Loss curve (Section 5): starts somewhere around `0.05–0.1`, ends around `0.0005–0.001`. The curve should look smooth on a log scale, with a clear downward trend. If it's flat or noisy throughout, something's wrong.
+1. Loss curve (Section 5): starts somewhere around `0.01–0.1` and drops by at least an order of magnitude over training (typical final loss is anywhere from `0.0005` to `0.005`, depending on sparsity - higher sparsity converges deeper). The curve should look smooth on a log scale, with a clear downward trend. The absolute value matters less than the shape: a clean fast initial drop followed by a long noisy plateau is exactly what you want.
 
 2. Sparsity sweep (Section 6):
    - At `S = 0`: only 2 arrows visible (the top-2 importance features), pointing in roughly perpendicular directions. The other 3 columns of `W` have ~zero length.

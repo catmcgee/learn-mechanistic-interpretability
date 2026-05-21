@@ -5,7 +5,7 @@ This is project 2 in our mech interp series. We replicate the core finding of [P
 By the end you'll have:
 
 - Trained a tiny 1-layer transformer on a simple maths problem and watched it do something genuinely strange: sit at ~chance performance for thousands of training steps, then suddenly "wake up" and generalise perfectly.
-- A mechanistic explanation for that delayed generalisation - you'll look inside the trained model and discover it learnt a trigonometric algorithm based on the Fourier basis.
+- A mechanistic explanation for that delayed generalisation - you'll look inside the trained model and discover it learnt a trigonometric algorithm based on the **Fourier basis**. ("Fourier" is the idea that any repeating pattern can be written as a sum of sines and cosines at different frequencies. In this project, the model uses sines and cosines to represent numbers as rotations around a circle - because the task wraps modulo 113, "rotations" is the natural way to think about it.)
 - Your first transformer, built from scratch in PyTorch.
 
 This is the spiritual successor to project 1 (Toy Models of Superposition). Same recipe - train a small model from scratch, then reverse-engineer it - but now we get to use a transformer.
@@ -35,6 +35,8 @@ Grokking is what happens when those two curves come apart in a really weird way:
 1. Memorisation phase (steps 0 → ~1k): training loss drops to near zero - the model has memorised the answers to every training example. Test loss stays at chance level - the model has learnt nothing generalisable.
 2. Plateau (steps ~1k → ~10k+): training loss stays low, test loss stays bad. Looks like the model has just memorised and that's it. For a long, long time.
 3. Grokking (suddenly, much later): test loss falls off a cliff and reaches near-zero. The model has, somehow, figured out the underlying rule and now generalises perfectly - long after it could have just stopped at memorisation.
+
+![Log-scale loss curve showing the three phases of grokking. A blue train-loss curve drops sharply within the first ~500 steps and stays flat near zero. An orange test-loss curve stays high for a long plateau, then drops off a cliff around step ~15,000. Three labelled background bands: Memorisation (~0–1k), Plateau (~1k–15k), Grokking (~15k+).](diagrams/grokking-loss-curve.png)
 
 This was first reported by [Power et al. 2022](https://arxiv.org/abs/2201.02177) ("Grokking: Generalisation Beyond Overfitting on Small Algorithmic Datasets") at OpenAI. They observed it but had no mechanistic explanation.
 
@@ -112,8 +114,6 @@ What we plot. Train loss and test loss vs step, both on a log scale, for ~25,000
 - Train loss crashes to near zero within the first ~500 steps. (Memorisation)
 - Test loss stays bad - close to `log(113) ≈ 4.7`, which is the loss of random guessing among 113 classes - for a long time.
 - Then, somewhere around step 10,000–20,000, test loss falls off a cliff and reaches near zero. (Grokking - the wow moment.)
-
-![Log-scale loss curve showing the three phases of grokking. A blue train-loss curve drops sharply within the first ~500 steps and stays flat near zero. An orange test-loss curve stays high for a long plateau, then drops off a cliff around step ~15,000. Three labelled background bands: Memorisation (~0–1k), Plateau (~1k–15k), Grokking (~15k+).](diagrams/grokking-loss-curve.png)
 
 The reverse-engineering (stretch). We take the trained model's embedding matrix `W_E` (shape `(d_vocab, d_model)` - one vector per number `0..112` plus `=`). We do a discrete Fourier transform along the vocab dimension. We discover that almost all of the embedding energy lives in just a handful of Fourier frequencies - the model is representing each number as `cos(2πkx/p)` and `sin(2πkx/p)` for a small set of `k`. This is the Fourier algorithm the model has discovered, sitting right there in the embedding weights.
 

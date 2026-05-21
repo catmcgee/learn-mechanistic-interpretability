@@ -39,7 +39,7 @@ By the end you'll have:
 
 ## 1. What is mechanistic interpretability?
 
-When you train a neural network you get back a model defined by millions (or billions) of numbers - its weights. Nobody hand-designed those numbers. Gradient descent did. So they look, on first inspection, like noise.
+When you train a neural network you get back a model defined by millions (or billions) of numbers - its weights. Nobody hand-designed those numbers. Gradient descent did (gradient descent = the training algorithm: nudge every weight a tiny step in the direction that reduces the model's error, repeat thousands of times). So they look, on first inspection, like noise.
 
 Mech interp is the project of opening that "noise" up and discovering that, actually, the weights are doing something specific and understandable. The dream is a sort of "decompiler" for neural networks.
 

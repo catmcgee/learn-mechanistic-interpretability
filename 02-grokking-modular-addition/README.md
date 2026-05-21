@@ -200,7 +200,9 @@ A hand-rolled tiny transformer in ~50 lines of PyTorch. We define:
 Hand-rolled is the mech-interp tradition - using `nn.Transformer` would hide the internals we want to inspect.
 
 ### Section 5: Training
-Standard loop, AdamW, cross-entropy on the `=`-position logits. Every 100 steps we record both train loss and test loss, so we can plot them at the end. ~25k steps takeson a Colab T4.
+Standard loop, AdamW, cross-entropy on the `=`-position logits. Every 100 steps we record both train loss and test loss, so we can plot them at the end.
+
+**Heads up: this is the slow cell.** The default is 10,000 steps of full-batch training, so on a T4 GPU it takes around 4 minutes to finish. It's slow because every step does a forward + backward over the **entire** training set (~3,800 examples) rather than a mini-batch - that's deliberate, because grokking is sensitive to optimiser noise and full-batch makes the phase transition clean and reproducible. Don't navigate away from this page while it's running - the kernel is stateful, so closing the tab kills the in-flight training and leaves later cells without the trained `model` to inspect.
 
 ### Section 6: The grokking curve
 The headline plot. Train loss vs test loss vs step, log scale. This is the wow moment. You'll see the train loss crash to zero almost immediately, then a long flat plateau on test loss, then a sudden cliff. We mark the rough memorisation phase, plateau, and grokking phase on the plot.
@@ -231,7 +233,7 @@ Concrete expectations:
 1. Go to [colab.research.google.com](https://colab.research.google.com).
 2. `File → Upload notebook` → upload `grokking.ipynb`.
 3. `Runtime → Change runtime type → GPU` (T4 is fine and free).
-4. `Runtime → Run all`. The model trains for; the rest takes seconds.
+4. `Runtime → Run all`. The training cell takes roughly 4 minutes on a T4 at the default `n_steps = 10_000`; every other cell is near-instant.
 
 If you want to skip training and just play with the analysis, you could save the trained weights at the end of Section 5 and reload them - we don't bother with that here but it's a one-liner.
 

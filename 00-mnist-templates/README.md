@@ -218,11 +218,11 @@ What we just saw. Why it matters. Where it falls short. (Spoiler: the messy MLP 
 
 Concrete expectations so you can tell whether things worked:
 
-1. Logistic regression accuracy: ~91-93% on the test set. Anything in that range is fine.
+1. Logistic regression accuracy (Section 3): ~91-93% on the test set. Anything in that range is fine.
 
 2. Logistic regression weight visualisation (Section 4): 10 images, each roughly the shape of the corresponding digit. The "0" row looks like a hollow oval. The "1" looks like a tall vertical stripe. The "8" looks like two stacked blobs. They will be fuzzy, not crisp - they're an average of all that digit's training examples.
 
-3. MLP accuracy: ~96-97%. Better than logistic regression because the hidden layer can do more than template matching.
+3. MLP accuracy (Section 5): ~96-97%. Better than logistic regression because the hidden layer can do more than template matching.
 
 4. MLP first-layer weights (Section 6): 32 heatmaps. Some will look like clear edges or strokes. Others will look like noisy blends. A few may look almost empty. This is the point - the picture isn't as clean as in the logistic-regression case.
 

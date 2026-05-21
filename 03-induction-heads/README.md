@@ -189,7 +189,7 @@ What this all means, what we deliberately did not do (no causal verification - t
 
 ## 7. What you should see when you run it
 
-1. Training: ~3,000 steps in. The first-half loss stays near 4.16 the whole time; the second-half loss starts near 4.16 and drops to under 0.1.
+1. Training (Section 5): ~3,000 steps in. The first-half loss stays near 4.16 the whole time; the second-half loss starts near 4.16 and drops to under 0.1.
 
 2. Head identification (Section 7): exactly one Layer 0 head has a previous-token score above ~0.5 (the rest are near `1/50`). Exactly one Layer 1 head has an induction score above ~0.5. The exact head indices depend on the random seed.
 

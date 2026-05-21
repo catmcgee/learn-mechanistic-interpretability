@@ -255,7 +255,7 @@ Concrete expectations:
 
 2. Test loss curve (Section 6): stays near `4.7` (random-guess level) for thousands of steps, then drops suddenly - over a few hundred steps - to under `0.01`. The grokking transition is sharp, not gradual.
 
-3. When does grokking happen? Somewhere between step 8,000 and 20,000 with our hyperparameters. The exact step varies with the random seed; that's normal. If you're past step 25,000 and test loss is still high, weight decay or learning rate is probably off.
+3. When does grokking happen? (Section 6) Somewhere between step 8,000 and 20,000 with our hyperparameters. The exact step varies with the random seed; that's normal. If you're past step 25,000 and test loss is still high, weight decay or learning rate is probably off.
 
 4. Fourier plot (Section 7, stretch): the FFT of `W_E` should be sparse - most frequencies near zero, but a handful (typically 3-6) of "key frequencies" with large magnitudes. Those are the trig functions the model has learnt to use.
 

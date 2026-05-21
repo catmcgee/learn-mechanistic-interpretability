@@ -165,7 +165,7 @@ What we found, what we didn't (the rest of the circuit), and the conceptual diff
 
 ## 7. What you should see when you run it
 
-1. Clean logit diff: ~3-4. Corrupted logit diff: ~−3 (model fully flipped because of the name swap).
+1. Clean logit diff (Section 4): ~3-4. Corrupted logit diff: ~−3 (model fully flipped because of the name swap).
 
 2. Patching heatmap (Section 7): roughly 3-5 bright cells in layers 9-10. The brightest are typically `L9H9` (~50-70% recovery), `L9H6`, `L10H0`. Most cells are dark. The bright ones are the name movers.
 

@@ -58,8 +58,12 @@ If you're brand new to ML, some of these might be your first time seeing the wor
 - **Input pixel space**: for MNIST, each image is 28×28 = 784 pixels. The input to the model is a length-784 vector.
 - **Class**: one of the 10 possible labels (digit 0 through digit 9). The model predicts a probability distribution over classes.
 - **Softmax**: a function that turns any vector of real numbers into a probability distribution (positive, sums to 1). Applied at the output of a classifier.
-- **Cross-entropy loss**: the standard loss for classification. Penalises low predicted probability for the correct class. You don't need to understand the formula yet; just know it's what you optimise.
-- **Optimiser**: the algorithm that adjusts the weights to reduce the loss. We'll use Adam, a sensible default. In code you'll see it spelled `optimizer` because PyTorch uses American spelling.
+- **Loss**: a single number that measures how wrong the model is right now. Lower is better. We tune the weights to make it as small as possible.
+- **Cross-entropy loss**: the specific loss we use for classification. Penalises low predicted probability for the correct class. You don't need to understand the formula yet; just know it's what you optimise.
+- **Gradient**: for each weight in the model, "if I nudged this weight up a tiny bit, would the loss go up or down, and by how much?" The gradient is the collection of those answers, one per weight.
+- **Gradient descent**: the algorithm that trains every neural network you'll ever meet. Start with random weights. Repeatedly: feed in data, compute the loss, compute the gradient, then nudge every weight a tiny step in the direction that decreases the loss. Thousands of steps later the weights have "descended" to a low-loss configuration. That's the whole show. Adam, AdamW, SGD - those are all just different recipes for *how big* a step to take.
+- **Backpropagation**: the calculus trick that computes the gradient efficiently. In code it's literally one line: `loss.backward()`.
+- **Optimiser**: the bit that actually applies the gradient-descent step. We'll use Adam, a sensible default. In code you'll see it spelled `optimizer` because PyTorch uses American spelling.
 - **Training loop**: the cycle of (1) forward pass: model makes predictions, (2) compute loss, (3) compute gradients via backpropagation, (4) optimiser updates the weights. Repeat thousands of times.
 - **MNIST**: a dataset of 70,000 28×28 greyscale images of handwritten digits, each labelled 0-9. Old, small, perfect for tutorials.
 - **Template matching**: an algorithm that compares the input to a stored prototype and outputs how similar it is. As you'll see, that's essentially what logistic regression on MNIST does.

@@ -12,23 +12,7 @@ Specifically:
 - We'll look at the model's weight matrix and see that each row is a fuzzy template of a digit.
 - We'll then train a slightly bigger model (1 hidden layer) and look at its weights - they'll be messier and harder to interpret, which is a teaser for project 1 (superposition).
 
-> **Suggested diagram - input → vector → layers → output**
->
-> Why generate this: this is the first ML pipeline most readers will ever see. A clean picture of "image becomes a list of numbers, passes through a layer, comes out as class scores" makes the four building blocks click without any equation.
->
-> Prompt for ChatGPT image generation:
->
-> > A minimal four-step diagram on a white background, read left to right, sans-serif labels, no decoration. The four steps are evenly spaced with simple arrows between them.
-> >
-> > 1. INPUT. A small handwritten "3" drawn on a 28×28 pixel grid. Label underneath: "input: a 28×28 image".
-> > 2. Arrow labelled "flatten" pointing right.
-> > 3. VECTOR. A tall thin vertical column of small squares (about 12 squares visible plus a vertical ellipsis "…" indicating more). Label underneath: "vector: an ordered list of numbers (here: 784 of them)".
-> > 4. Arrow pointing right.
-> > 5. LAYERS. Draw two horizontal rectangles literally stacked like pancakes to suggest the word "layer". The bottom rectangle is solid and labelled inside it "linear layer". The upper rectangle is drawn with a dashed outline and labelled "(optionally more layers)". Label underneath the whole stack: "layers: the model's machinery - each layer turns one vector into another".
-> > 6. Arrow pointing right.
-> > 7. OUTPUT. 10 short horizontal bars stacked vertically, each labelled with a digit 0-9 on the left. The bar for "3" is the tallest and filled in colour; the others are short and grey. Label underneath: "output: 10 scores, one per digit - the biggest wins".
-> >
-> > Big caption underneath the whole row: "input → vector → layers → output. That's the shape of any neural network."
+![Four-step horizontal diagram on white background: (1) a 28×28 pixel grid showing a handwritten "3", captioned "input: a 28×28 image"; (2) arrow labelled "flatten" pointing right to a tall thin column of small squares (with a vertical ellipsis indicating more), captioned "vector: an ordered list of numbers (here: 784 of them)"; (3) arrow to a stack of three labelled rectangles - "Layer 0" at the bottom, "Layer 1" above it, "Layer 2" above that, plus a faint dashed box labelled "(optionally more layers)" - captioned "layers: the model's machinery - each layer turns one vector into another"; (4) arrow to 10 horizontal bars labelled 0-9 with the bar for "3" tallest and filled in blue, captioned "output: 10 scores, one per digit - the biggest wins". Big caption underneath: "input → vector → layers → output. That's the shape of any neural network."](diagrams/input-vector-layers-output.png)
 
 That single move - train, look, find something - is what every subsequent step in this series elaborates on.
 

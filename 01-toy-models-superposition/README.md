@@ -56,19 +56,7 @@ Two pieces of geometry vocabulary you need before going further:
 - **Hidden space**: the set of possible values inside the model's bottleneck layer. Our model has 2 hidden neurons, so any "hidden state" is just a pair of numbers - a single point you can literally draw on a page. That's exactly why we chose `m=2` for this experiment: 2D is plottable.
 - **Direction**: any non-zero vector, pointing from the origin out into the space. Two vectors are orthogonal (perpendicular) if they form a 90° angle - like the x-axis and y-axis. Most pairs of random directions are not orthogonal; they overlap somewhat.
 
-> **Suggested diagrams - three views of the same 2D plane**
->
-> Why generate these: dimension, hidden space, and direction are all just different ways of looking at the same coordinate plane. Three images that share the same base diagram make the relationship between the three concepts obvious.
->
-> Base diagram (shared by all three): a clean 2D coordinate plane, square aspect ratio, white background, sans-serif labels. Horizontal x-axis and vertical y-axis, light grid lines, range about -3 to 3 on each axis, with the origin labelled.
->
-> Generate the three variants below as separate images. Each one starts from the base and adds exactly one overlay.
->
-> Variant 1 - "Dimension". On the base plane, add a single labelled dot at the point `(3, -1.5)`. Draw a dashed line from the dot down to the x-axis (meeting it at 3) and a dashed line across to the y-axis (meeting it at -1.5). Caption underneath: "A point is just a list of numbers. This one needs 2 numbers - that's why we call it 2D."
->
-> Variant 2 - "Hidden space". On the base plane, shade the whole plane a very pale colour to suggest "all possible values", and scatter ~10 small dots at varied positions across it. Caption underneath: "The whole plane is the model's hidden space - every possible 2-number hidden state lives somewhere on it. With 2 hidden neurons, that's all the room the model has."
->
-> Variant 3 - "Direction". On the base plane, draw two arrows from the origin out into the plane: one along the positive x-axis (pointing right) and one at roughly 30° above horizontal (pointing up-and-right). Mark the angle between them. Add a faint dashed third arrow along the positive y-axis. Caption underneath: "A direction is any arrow from the origin. Two directions are orthogonal if they meet at 90° - like the x and y axes."
+![Three side-by-side 2D coordinate planes from -3 to 3 on each axis, illustrating Dimension, Hidden space, and Direction. Left panel "Dimension": a labelled dot at (3, -1.5) with dashed lines down to the x-axis and across to the y-axis; caption "A point is just a list of numbers. This one needs 2 numbers - that's why we call it 2D." Middle panel "Hidden space": the whole plane shaded pale, with about 10 scattered dots; caption "The whole plane is the model's hidden space - every possible 2-number hidden state lives somewhere on it. With 2 hidden neurons, that's all the room the model has." Right panel "Direction": a blue arrow along the positive x-axis, a green arrow at 30° above horizontal, the 30° angle between them marked, and a faint dashed arrow along the positive y-axis; caption "A direction is any arrow from the origin. Two directions are orthogonal if they meet at 90° - like the x and y axes."](diagrams/dimension-hidden-direction.png)
 
 Real language models have hidden spaces of dimension 768, 4096, or even 12,288. You can't draw those, but each feature still gets a direction in that high-D space. Exactly the same idea as our 2D toy - just not visualisable.
 

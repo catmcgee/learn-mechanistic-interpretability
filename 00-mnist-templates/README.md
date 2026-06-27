@@ -122,7 +122,7 @@ If you've never trained a model in PyTorch before, this is the place to learn th
 A tensor is PyTorch's name for a multi-dimensional array (basically a NumPy array that can live on a GPU and track gradients).
 
 ```python
-x = torch.zeros(3, 4)         # 3×4 tensor of zeros
+x = torch.zeros(3, 784)         # 3×784 tensor of zeros
 y = torch.randn(10, 784)      # 10×784 tensor of normal-distributed random numbers
 z = x @ y.T                   # 3×10 - @ is matrix multiplication
 ```
